@@ -18,39 +18,38 @@
 ## CREATION DES VARIABLES ##
 
 ## Noms de l'arborescence ##
-NAMEDIRSRC=src
-NAMEDIROBJ=obj
-NAMEDIREXE=build
+SRCDIR = src
+OBJDIR = obj
+EXEDIR = build
 
 ### Compilateur ###
-CC=g++
+CC = g++
 
 ### FLAGS ###
-CFLAGS=-c -ggdb -Wall $(shell pkg-config --cflags opencv)
-LDFLAGS=
-LIBS=$(shell pkg-config --libs opencv)
-
-### Recuperation des sources du projet ###
-SOURCES=$(wildcard $(NAMEDIRSRC)/*.cpp)
+CFLAGS = -c -std=c++11 -ggdb -Wall $(shell pkg-config --cflags opencv)
+LDFLAGS =
+LIBS = $(shell pkg-config --libs opencv)
 
 ### Creation des noms des objets a creer ###
-OBJECTS=$(join $(addsuffix ../$(NAMEDIROBJ)/, $(dir $(SOURCES))), $(notdir $(SOURCES:.cpp=.o)))
+_OBJ = main.o composante.o 
+OBJ = $(patsubst %,$(OBJDIR)/%,$(_OBJ))
 
 ### Nom de l'executable ###
-EXECUTABLE=$(NAMEDIREXE)/dotr
+_EXEC = dotr
+EXEC = $(EXEDIR)/$(_EXEC)
 
 ## LISTE DES REGLES ##
 
-all:$(EXECUTABLE)
+all:$(EXEC)
     
-$(EXECUTABLE):$(OBJECTS) 
-	$(CC) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $@
+$(EXEC):$(OBJ) 
+	$(CC) $(LDFLAGS) $(OBJ) $(LIBS) -o $@
 
-$(OBJECTS):$(SOURCES)
+$(OBJDIR)/%.o:$(SRCDIR)/%.cpp
 	$(CC) $(CFLAGS) $< -o $@
 	
 clean:
-	rm $(EXECUTABLE) && rm $(OBJECTS)
+	rm $(EXEC); rm $(OBJ)
 	
 run:
-	./$(EXECUTABLE)
+	./$(EXEC)
