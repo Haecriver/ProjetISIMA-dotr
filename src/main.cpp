@@ -25,6 +25,13 @@ unsigned fps = 30;
 const std::string PATH_RES = "./rsc/Scenario_1_1/in1_";
 const unsigned NB_IMG=517;
 
+/*!
+ *  \brief Renvoie une string representant l'entier i avec un certain nombre de digits
+ *
+ *  \param i : Entier a representer.
+ *  \param lenght : Nombre de digits
+ *  \return string representant l'entier
+ */
 std::string setDigit(const int i, const int length)
 {
     std::ostringstream ostr;
@@ -47,7 +54,13 @@ int THRESHOLD_TYPE = 0;
 int THRESHOLD_VALUE = 150;
 int const MAX_BINARY_VALUE = 255;
 
-Mat applyFilter(Mat src){
+/*!
+ *  \brief Fonction temporaire, applique les filtre sur une copie de l'image en reference
+ *
+ *  \param src : Ref image.
+ *  \return Image traitee
+ */
+Mat applyFilter(const Mat& src){
 	Mat res, res_gray, element_erosion, element_dilatation;
 	std::vector<Composante> comps;
 	int erosion_size = 1;
@@ -81,11 +94,13 @@ Mat applyFilter(Mat src){
   		dilate(res, res, element_dilatation );
     }
     
+    // Composante connexe
     comps = Composante::getCompostantes(res);
     
     // RGB ET POURTANT BRG ??
     cvtColor(res, res, CV_GRAY2RGB);
     
+    // Detection des points calcules
     for(Composante comp : comps){
     	circle(res, comp.getPosition(), 5, Scalar(255,0,0));
     }
@@ -93,40 +108,47 @@ Mat applyFilter(Mat src){
 	return res;
 }
 
-int main()
+int main(int argc, const char* argv[] )
 {
-	std::vector<Mat> imgs;
+	// Chrono pour les fps
 	std::chrono::time_point<std::chrono::system_clock> start, end;
-	int msToWait, msToWaitOpt = 1000/fps;	// Nombre de seconde a attendre entre chaque image
-		
+	std::vector<Mat> imgs;		// Liste des images chargees
+	int msToWait;				// Nombre de seconde a attendre entre chaque image
+	int msToWaitOpt = 1000/fps;	// Nombre de seconde a attendre dans le meilleur des cas
+	
+	// Chargement des images
 	for(unsigned i=0;i<NB_IMG;i++){
 		std::string pathimg=PATH_RES+setDigit(i,4)+".jpg";
 		Mat temp = imread(pathimg);
-		if (!temp.empty()){
+		if (!temp.empty()){	// Si l'image a bien ete chargee
 			imgs.push_back(temp);
 		}
 	}
 
+	// Pour chaque images chargees
     for(Mat img: imgs){
     	start = std::chrono::system_clock::now();
     	
+    	// On affiche l'image
     	imshow("Capturedemo",img);
+    	// On affiche l'image filtrer
     	imshow("Filter", applyFilter(img));
     	
+    	// On calcul le temps de l'application du filtre
 		end = std::chrono::system_clock::now();
 		std::chrono::duration<double> elapsed_seconds = end-start;
 		msToWait = msToWaitOpt - elapsed_seconds.count();
 		
+		// Si <0, cela veut dire que l'on a pas a attendre pour afficher l'image suivante
 		if(msToWait<0)
 			msToWait=0;
-			
+		
+		// On attend pend msToWait ms l'appuie sur la touche ESC
 		if (waitKey(msToWait) == 27){
 			std::cout << "ESC key pressed by user" << std::endl;
 			break; 
 		}
     }
     
-    waitKey(30);
-
     return 0;
 }
