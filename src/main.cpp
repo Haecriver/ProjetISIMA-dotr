@@ -44,6 +44,33 @@ std::string setDigit(const int i, const int length)
     return ostr.str();
 }
 
+/*!
+ *  \brief Pose cote a cote une serie d'image
+ *
+ *  \param imgs : Serie d'image
+ *  \return Images cote a cote
+ */
+Mat catImages(std::vector<Mat> imgs)
+{	
+	unsigned width=0,width_cur=0;
+	Mat res;
+	if(imgs.size()>0){
+
+		for(Mat img: imgs){
+			width+=img.size().width;
+		}
+	
+		res = Mat(imgs[0].size().height, width, CV_8UC3);
+	
+		for(Mat img: imgs){
+			Size sz = img.size();
+			img.copyTo(res(Rect(width_cur, 0, sz.width, sz.height)));
+			width_cur+=sz.width;
+		}
+    }
+	return res;
+}
+
 /* 0: Binary
  1: Binary Inverted
  2: Threshold Truncated
@@ -115,6 +142,11 @@ int main(int argc, const char* argv[] )
 	std::vector<Mat> imgs;		// Liste des images chargees
 	int msToWait;				// Nombre de seconde a attendre entre chaque image
 	int msToWaitOpt = 1000/fps;	// Nombre de seconde a attendre dans le meilleur des cas
+	Mat render;
+	
+	bool record_capture;
+	std::string nomFichier,pathFichier;
+	VideoWriter outputVideo;  
 	
 	// Chargement des images
 	for(unsigned i=0;i<NB_IMG;i++){
@@ -124,15 +156,31 @@ int main(int argc, const char* argv[] )
 			imgs.push_back(temp);
 		}
 	}
+	
+	// Verif des args du main
+	record_capture = argc==2;
+	// Dans le cas d'un enregistrement video, creation du fichier
+	if(record_capture){
+		nomFichier=std::string(argv[1]) + ".avi";
+		pathFichier="rsc/"+nomFichier;
+		std::cout<< pathFichier << std::endl;
+		outputVideo.open("video.AVI",  CV_FOURCC('M', 'J', 'P', 'G'), 15.0, Size(640, 480));
+		if (!outputVideo.isOpened())
+		{
+		    std::cout  << "Could not open the output video for write" << std::endl;
+			record_capture = false;
+		}
+	}
 
 	// Pour chaque images chargees
     for(Mat img: imgs){
     	start = std::chrono::system_clock::now();
     	
-    	// On affiche l'image
-    	imshow("Capturedemo",img);
-    	// On affiche l'image filtrer
-    	imshow("Filter", applyFilter(img));
+    	render = catImages(std::vector<Mat>({img,applyFilter(img)}));
+    	imshow("Rendu",render);
+    	if(record_capture){
+    		outputVideo << render;
+    	}
     	
     	// On calcul le temps de l'application du filtre
 		end = std::chrono::system_clock::now();
