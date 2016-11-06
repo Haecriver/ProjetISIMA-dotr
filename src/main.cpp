@@ -48,7 +48,8 @@ int THRESHOLD_VALUE = 150;
 int const MAX_BINARY_VALUE = 255;
 
 Mat applyFilter(Mat src){
-	Mat res, element_erosion, element_dilatation;
+	Mat res, res_gray, element_erosion, element_dilatation;
+	std::vector<Composante> comps;
 	int erosion_size = 1;
 	int dilatation_size = 1;
 	int nb_erosion = 2;
@@ -79,6 +80,15 @@ Mat applyFilter(Mat src){
     for(int i =0;i<nb_dilatation;i++){
   		dilate(res, res, element_dilatation );
     }
+    
+    comps = Composante::getCompostantes(res);
+    
+    // RGB ET POURTANT BRG ??
+    cvtColor(res, res, CV_GRAY2RGB);
+    
+    for(Composante comp : comps){
+    	circle(res, comp.getPosition(), 5, Scalar(255,0,0));
+    }
 	
 	return res;
 }
@@ -96,8 +106,6 @@ int main()
 			imgs.push_back(temp);
 		}
 	}
-
-
 
     for(Mat img: imgs){
     	start = std::chrono::system_clock::now();

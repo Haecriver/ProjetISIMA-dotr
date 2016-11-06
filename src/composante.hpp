@@ -18,21 +18,21 @@ class Composante{
 		std::vector<Point> points;
 		Point pos;
 		
+		void computeMeanPos();
+		static void computeAComposante(Mat& copy, Point pointCur, Composante& cur);
+		
 	public:
 		Composante();
 		
 		static std::vector<Composante> getCompostantes(const Mat& src);
-		
-		static void computeAComposante(Mat& copy, Point pointCur, Composante& cur);
-		
+			
 		void addPoint(Point point){
 			points.push_back(point);
 		}
 		
-		Point getPostion(){
+		Point getPosition(){
 			return pos;
-		}
-	
+		}	
 };
 
 #endif

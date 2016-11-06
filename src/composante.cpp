@@ -6,11 +6,12 @@
  */
  
 #include "composante.hpp"
+#include <iostream>
 
 Composante::Composante(): pos(0,0) {}
 		
 std::vector<Composante> Composante::getCompostantes(const Mat& src){
-	Mat copy(src);
+	Mat copy = src.clone();
 	uchar* rowi;
 	uchar pixelCur;
 	std::vector<Composante> composantes;
@@ -18,6 +19,7 @@ std::vector<Composante> Composante::getCompostantes(const Mat& src){
 	for(int i=0; i<copy.rows; i++){
 		rowi = copy.ptr/*<uchar>*/(i);
 		for(int j=0; j<copy.cols; j++){
+
 			pixelCur = rowi[j];
 			
 			if(pixelCur!=0){
@@ -27,15 +29,34 @@ std::vector<Composante> Composante::getCompostantes(const Mat& src){
 			}
 		}
 	}
+	
+	for(Composante& comp : composantes){
+		comp.computeMeanPos();
+	}
 
 	return composantes;
 }
 
+void Composante::computeMeanPos(){
+	int xMean=0, yMean=0;
+	
+	 for(Point point: points){
+	 	xMean+=point.x;
+	 	yMean+=point.y;
+	 }
+	 
+	 xMean/=points.size();
+	 yMean/=points.size();
+	 
+	 // INVERSE ??
+	 this->pos.x = yMean;
+	 this->pos.y = xMean;
+}
+
 void Composante::computeAComposante(Mat& copy, Point pointCur, Composante& cur){
 	int posx, posy;
-	
 	//Robustesse
-	if(copy.ptr(pointCur.x)[pointCur.y] == 1){
+	if(copy.ptr(pointCur.x)[pointCur.y]!=0){
 		cur.addPoint(pointCur);					// On ajoute le point a la composante
 		copy.ptr(pointCur.x)[pointCur.y] = 0;	// On passe le point a 0
 		
