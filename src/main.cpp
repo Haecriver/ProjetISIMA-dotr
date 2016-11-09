@@ -78,7 +78,6 @@ Mat catImages(std::vector<Mat> imgs)
  4: Threshold to Zero Inverted
 */
 int THRESHOLD_TYPE = 0;
-int THRESHOLD_VALUE = 150;
 int const MAX_BINARY_VALUE = 255;
 
 /*!
@@ -90,16 +89,18 @@ int const MAX_BINARY_VALUE = 255;
 Mat applyFilter(const Mat& src){
 	Mat res, res_gray, element_erosion, element_dilatation;
 	std::vector<Composante> comps;
+	
+	int threshold_value = 150;
 	int erosion_size = 1;
 	int dilatation_size = 1;
 	int nb_erosion = 2;
-	int nb_dilatation = 1;
+	int nb_dilatation = 3;
 	
 	// Grayscale
 	cvtColor(src, res, CV_BGR2GRAY );
 	
 	// Binary threshold
- 	threshold(res, res, THRESHOLD_VALUE, MAX_BINARY_VALUE,THRESHOLD_TYPE );
+ 	threshold(res, res, threshold_value, MAX_BINARY_VALUE,THRESHOLD_TYPE );
  	
  	// Erosion
  	/* MORPH_RECT, MORPH_CROSS,  MORPH_ELLIPSE */
@@ -124,12 +125,12 @@ Mat applyFilter(const Mat& src){
     // Composante connexe
     comps = Composante::getCompostantes(res);
     
-    // RGB ET POURTANT BRG ??
+    // RGB ET POURTANT BGR ??
     cvtColor(res, res, CV_GRAY2RGB);
     
     // Detection des points calcules
     for(Composante comp : comps){
-    	circle(res, comp.getPosition(), 5, Scalar(255,0,0));
+    	circle(res, comp.getPosition(), 5, Scalar(0,0,255));
     }
 	
 	return res;
@@ -164,7 +165,8 @@ int main(int argc, const char* argv[] )
 		nomFichier=std::string(argv[1]) + ".avi";
 		pathFichier="rsc/"+nomFichier;
 		std::cout<< pathFichier << std::endl;
-		outputVideo.open("video.AVI",  CV_FOURCC('M', 'J', 'P', 'G'), 15.0, Size(640, 480));
+		int codec = CV_FOURCC('m', 'p', '4', 'v');
+		outputVideo.open("video_.avi", codec, 15.0, Size(640, 480), true);
 		if (!outputVideo.isOpened())
 		{
 		    std::cout  << "Could not open the output video for write" << std::endl;
@@ -192,7 +194,8 @@ int main(int argc, const char* argv[] )
 			msToWait=0;
 		
 		// On attend pend msToWait ms l'appuie sur la touche ESC
-		if (waitKey(msToWait) == 27){
+		int key = waitKey(msToWait);
+		if ( key == 27 || key == 'q'){
 			std::cout << "ESC key pressed by user" << std::endl;
 			break; 
 		}
