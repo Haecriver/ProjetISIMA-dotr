@@ -26,15 +26,15 @@ EXEDIR = build
 CC = g++
 
 ### FLAGS ###
-CFLAGS = -c -std=c++11 -ggdb -Wall $(shell pkg-config --cflags opencv)
+CFLAGS = -c -g -std=c++11 -ggdb -Wall $(shell pkg-config --cflags opencv)
 LDFLAGS =
 LIBS = $(shell pkg-config --libs opencv)
 
 ### Liste des dependances de compilations (.hpp) ###
-DEPS = 
+DEPS =
 
 ### Creation des noms des objets a creer ###
-_OBJ = main.o composante.o 
+_OBJ = main.o window.o display.o composante.o filtre.o bthreshold.o dilatation.o erosion.o grayscale.o etiquetage.o
 OBJ = $(patsubst %,$(OBJDIR)/%,$(_OBJ))
 
 ### Nom de l'executable ###

@@ -74,16 +74,14 @@ class Composante{
 		 *  \param src : Reference constante vers l'image a traiter.
 		 *  \return Le vecteur de composantes connexes de l'image.
 		 */
-		static std::vector<Composante> getCompostantes(const Mat& src);
+		static std::vector<Composante> getComposantes(const Mat& src);
 			
 		/*!
 		 *  \brief Ajout de point
 		 *
 		 *  \param point : Point a ajouter a la composante.
 		 */
-		void addPoint(Point point){
-			_points.push_back(point);
-		}
+		void addPoint(Point point);
 		
 		/*!
 		 *  \brief Getter position
