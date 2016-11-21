@@ -29,6 +29,9 @@ Mat Window::catImages(std::vector<Mat> imgs)
 		res = Mat(imgs[0].size().height, width, CV_8UC3);
 	
 		for(Mat img: imgs){
+			if(img.channels() == 1){
+				cvtColor(img, img, CV_GRAY2RGB);
+			}
 			Size sz = img.size();
 			img.copyTo(res(Rect(width_cur, 0, sz.width, sz.height)));
 			width_cur+=sz.width;
@@ -50,7 +53,7 @@ void Window::chargementImgs(){
 
 // On enregistre les images
 void Window::enregistrementImgs(std::string nameFile){
-	string pathFichier="rsc/"+nameFile + ".avi";
+	string pathFichier="rsc/" + nameFile + ".avi";
 	int codec = CV_FOURCC('m', 'p', '4', 'v');
 	outputVideo.open(pathFichier, codec, 15.0, Size(640, 480), true);
 	if (!outputVideo.isOpened())

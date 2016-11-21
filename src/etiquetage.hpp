@@ -8,10 +8,11 @@
 
 class Etiquetage : public Filtre {
 	private:
+		const unsigned MAX_NB_COMP;
 		std::vector<Composante> oldComps;
 
 	public :
-		Etiquetage();
+		Etiquetage(unsigned pMaxNbComp = 5);
 		virtual ~Etiquetage(){}
 		Mat render(Mat& img);
 };

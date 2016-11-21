@@ -8,9 +8,11 @@
 #include "composante.hpp"
 
 #include <iostream>
+#include <stack>
 #include <opencv2/imgproc/imgproc.hpp>
 
 Composante::Composante(): 
+	//_points(2024),
 	_pos(0,0),
 	_height(0),
 	_width(0) {}
@@ -62,33 +64,45 @@ void Composante::computeAtt(){
 	_height = yMax - yMin;
 }
 
-void Composante::computeAComposante(Mat& copy, Point pointCur){
+void Composante::computeAComposante(Mat& copy, Point pPointCur){
 	int posx, posy;
-	//Robustesse
-
-	if(copy.ptr(pointCur.y)[pointCur.x]!=0){
-		std::cout<< "foo" << std::endl;
+	bool isValide;
+	std::stack<Point> pile;
+	pile.push(pPointCur);
 		
-		// SEG FAULT
-		addPoint(pointCur);				// On ajoute le point a la composante
-		
-		
-		std::cout<< "bar" << std::endl;
-		copy.ptr(pointCur.y)[pointCur.x] = 0; 	// On passe le point a 0
-		// On parcour le voisinage
-		for(int i=-1; i<=1; i++){
-			for(int j=-1; j<=1; j++){
-				posx=pointCur.x + i;
-				posy=pointCur.y + j;
+	Point pointCur;
+	
+	while(!pile.empty()){
+		pointCur = pile.top();
+		pile.pop();
+	
+		//Robustesse
+		if((pointCur.x>=0 && pointCur.x<copy.rows) &&
+			(pointCur.y>=0 && pointCur.y<copy.cols) &&
+			copy.ptr(pointCur.y)[pointCur.x] == 255){
+					
+			addPoint(pointCur);				// On ajoute le point a la composante
+			copy.ptr(pointCur.y)[pointCur.x] = 0; 	// On passe le point a 0
 			
-				// Si le coordonnees sont valides et que le voisin est egal a 1
-				if((posx>=0 && posx<copy.rows) &&
-				  (posy>=0 && posy<copy.cols)){
-				  	if(copy.ptr(posy)[posx] != 0){
+			// On parcour le voisinage
+			for(int i=-1; i<=1; i++){
+				for(int j=-1; j<=1; j++){
+					posx=pointCur.x + i;
+					posy=pointCur.y + j;
+			
+					// Si le coordonnees sont valides et que le voisin est egal a 1
+					isValide = (posx>=0 && posx<copy.rows) &&
+					  (posy>=0 && posy<copy.cols) &&
+					  (copy.ptr(posy)[posx] == 255);
+					
+					if(isValide){
+
 					   	// On relance l'algo sur ce nouveau point, 
 					   	// avec la reference de la matrice et de 
-					   	// la composante modifie par l'appel courant
-						computeAComposante(copy,Point(posx,posy));
+					   	// la composante modifie par l'appel courant					
+						Point point(posx,posy);
+						pile.push(point);
+										
 					}
 				}
 			}
@@ -96,7 +110,7 @@ void Composante::computeAComposante(Mat& copy, Point pointCur){
 	}
 }
 		
-std::vector<Composante> Composante::getComposantes(const Mat& src){
+std::vector<Composante> Composante::getComposantes(const Mat& src, unsigned max_comp){
 	Mat copy(src.clone()); // Copy de la ref courante
 	std::vector<Composante> composantes;
 	
@@ -104,7 +118,7 @@ std::vector<Composante> Composante::getComposantes(const Mat& src){
 	for(int j=0; j<copy.rows; j++){
 		for(int i=0; i<copy.cols; i++){	
 			// Si le pixel courant est elligible
-			if( copy.ptr(j)[i]!=0 ){
+			if( copy.ptr(j)[i]!=0 && composantes.size() <= max_comp){
 				// On creer un nouveau composant et on l'ajoute au vecteur resultat
 				composantes.push_back(Composante(copy, Point(i,j)));
 			}

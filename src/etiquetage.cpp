@@ -1,15 +1,16 @@
 #include "etiquetage.hpp"
 #include <iostream>
-Etiquetage::Etiquetage()
+Etiquetage::Etiquetage(unsigned pMaxNbComp):
+MAX_NB_COMP(pMaxNbComp)
 {}
 
 Mat Etiquetage::render(Mat& img){
 	std::vector<Composante> comps;
-	
+
 	Mat res(img.clone());
 	
 	// Composante connexe
-    comps = Composante::getComposantes(res);
+    comps = Composante::getComposantes(res,MAX_NB_COMP);
     
     std::cout << "comps size: " << comps.size() << std::endl;
     

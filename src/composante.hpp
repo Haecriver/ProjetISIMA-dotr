@@ -17,7 +17,7 @@ using namespace cv;
  * \brief classe contenant tous les points d'une composante connexe d'une image	
  */
 class Composante{
-	private:
+	private:		
 		std::vector<Point> 	_points; 	/*!< Liste des points de la composante */
 		Point 				_pos;		/*!< Position (calculee) de la composante */
 		unsigned			_height;		/*!< Hauteur calculee de la composante 
@@ -74,7 +74,7 @@ class Composante{
 		 *  \param src : Reference constante vers l'image a traiter.
 		 *  \return Le vecteur de composantes connexes de l'image.
 		 */
-		static std::vector<Composante> getComposantes(const Mat& src);
+		static std::vector<Composante> getComposantes(const Mat& src, unsigned max_comp);
 			
 		/*!
 		 *  \brief Ajout de point
