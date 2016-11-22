@@ -10,6 +10,7 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
+#include <sstream>
 
 #include "window.hpp"
 #include "display.hpp"
@@ -29,15 +30,24 @@ struct statResult{
 	unsigned nbDil;
 	unsigned sizeDil;
 	unsigned thres;
+	
+	// NbComp ; thresh ; nbEro ; SizeEro ; nbDil ; SizeDil
+	std::string toCSV(){
+		std::stringstream ss;
+		ss	<< nbCompFound << "\t" << thres << "\t"
+			<< nbEro << "\t" << sizeEro << "\t"
+			<< nbDil << "\t" << sizeDil;
+		return ss.str();
+	}
 };
 
 std::ostream& operator<<(std::ostream& os, const statResult& res){
-	os	<< "Nb comp trouves  :;\t" << res.nbCompFound << std::endl
-		<< "Limite threshold :;\t" << res.thres << std::endl
-		<< "Nb d'erosions    :;\t" << res.nbEro << std::endl
-		<< "Size d'erosions  :;\t" << res.sizeEro << std::endl
-		<< "Nb dilatations   :;\t" << res.nbDil << std::endl
-		<< "Size dilatations :;\t" << res.sizeDil << std::endl;
+	os	<< "Nb comp trouves  :\t" << res.nbCompFound << std::endl
+		<< "Limite threshold :\t" << res.thres << std::endl
+		<< "Nb d'erosions    :\t" << res.nbEro << std::endl
+		<< "Size d'erosions  :\t" << res.sizeEro << std::endl
+		<< "Nb dilatations   :\t" << res.nbDil << std::endl
+		<< "Size dilatations :\t" << res.sizeDil << std::endl;
 	return os;
 }
 
@@ -57,7 +67,7 @@ int main(int argc, const char* argv[] )
 	unsigned MIN_NB_DIL = 1, MAX_NB_DIL = 3;
 	unsigned MIN_SIZE_DIL = 1, MAX_SIZE_DIL = 3;
 	
-	unsigned MIN_THRES = 150, MAX_THRES = 255;
+	unsigned MIN_THRES = 100, MAX_THRES = 150;
 	
 	unsigned nbEro, sizeEro, nbDil, sizeDil, thres, nbCompFound, cpt=0;
 	
@@ -78,8 +88,8 @@ int main(int argc, const char* argv[] )
 	
 	Grayscale* 	grayscale = new Grayscale();
 	Bthreshold* threshold = new Bthreshold(MIN_THRES);
-	Erosion* 	erosion = new Erosion(MIN_NB_ERO,MIN_SIZE_ERO);
-	Dilatation* dilatation = new Dilatation(MIN_NB_DIL,MIN_SIZE_DIL);
+	Erosion* 	erosion = new Erosion(MIN_NB_ERO,MIN_SIZE_ERO,MORPH_CROSS);
+	Dilatation* dilatation = new Dilatation(MIN_NB_DIL,MIN_SIZE_DIL,MORPH_CROSS);
 	Etiquetage* etiquetage = new Etiquetage();
 	
 	// Parametrage de la sortie filtree
@@ -92,8 +102,15 @@ int main(int argc, const char* argv[] )
 	// Ajout des rendus a la fenetre
 	window.addDisplay(filtered);
 	
+	file << "INFO\tValeur Threshold\tNombre d'erosions\tTaille d'erosion\tNombre dilatation\tTaille dilatation" << std::endl;
+	file << "MIN\t"<<MIN_THRES<<"\t"<<MIN_NB_ERO<<"\t"<<MIN_SIZE_ERO<<"\t"<<MIN_NB_DIL<<"\t"<<MIN_SIZE_DIL<<std::endl;
+	file << "MIN\t"<<MAX_THRES<<"\t"<<MAX_NB_ERO<<"\t"<<MAX_SIZE_ERO<<"\t"<<MAX_NB_DIL<<"\t"<<MAX_SIZE_DIL<<std::endl;
+	file << std::endl;
 	
 	// On fait le traitement statique pour chaque valeur
+	file << "Nombre Comp trouve\tValeur Threshold\t" <<
+			"Nombre d'erosions\tTaille d'erosion\t" <<
+			"Nombre dilatation\tTaille dilatation" << std::endl;
 	for(thres = MIN_THRES; thres <= MAX_THRES; ++thres){
 		threshold->setThresholdValue(thres);
 		
@@ -122,7 +139,7 @@ int main(int argc, const char* argv[] )
 						res_cur.sizeDil = sizeDil;
 						res_cur.thres = thres;
 						
-						file << res_cur << std::endl;
+						file << res_cur.toCSV() << std::endl;
 						results.push_back(res_cur);
 					}
 				}
@@ -135,9 +152,12 @@ int main(int argc, const char* argv[] )
 	// Affichage des 10 meilleurs resultats
 	std::cout << "Meilleurs resultats" << std::endl << std::endl;
 	file << "-------------- 10 meilleurs res --------------" << std::endl << std::endl;
+	file << "Nombre Comp trouve\tValeur Threshold\t" <<
+			"Nombre d'erosions\tTaille d'erosion\t" <<
+			"Nombre dilatation\tTaille dilatation" << std::endl;
 	for(std::vector<statResult>::iterator it=results.begin(); it!=results.end() && it!=results.begin()+10; ++it){			
 		std::cout << *it << std::endl;
-		file << *it << std::endl;
+		file << it->toCSV() << std::endl;
 	}
 	
 	file.close();
