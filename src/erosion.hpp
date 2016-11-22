@@ -8,9 +8,23 @@ class Erosion : public Filtre {
 		Mat elementErosion;
 		unsigned sizeErosion;
 		unsigned nbErosion;
+		int shape;
 	public:
-		Erosion(unsigned pSizeErosion, unsigned pNbErosion);
+		// Constructeurs
+		Erosion(unsigned pSizeErosion, unsigned pNbErosion, int pShape = MORPH_CROSS);
 		virtual ~Erosion(){}
+		
+		// Setter/Getter
+		void setSizeErosion(unsigned pSizeErosion);
+		unsigned getSizeErosion();
+		
+		void setNbErosion(unsigned pNbErosion);
+		unsigned getNbErosion();
+		
+		void setShape(int pShape);
+		int getShape();
+		
+		// Methode
 		Mat render(Mat& img);
 };
 

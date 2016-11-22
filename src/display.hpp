@@ -7,6 +7,7 @@
 #include<opencv2/imgproc/imgproc.hpp>
 
 #include "filtre.hpp"
+#include "etiquetage.hpp"
 
 using namespace cv;
 
@@ -19,6 +20,8 @@ class Display{
 	
 		Mat render(Mat& src);		
 		void addFiltre(Filtre* filtre);
+		
+		bool isAllCompFound(unsigned nbCompToFind, Etiquetage* filtre_etiquetage_courant, Mat& src);
 };
 
 #endif

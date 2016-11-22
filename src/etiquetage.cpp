@@ -1,18 +1,26 @@
 #include "etiquetage.hpp"
 #include <iostream>
+
+// Constructeur
 Etiquetage::Etiquetage(unsigned pMaxNbComp):
 MAX_NB_COMP(pMaxNbComp)
 {}
 
-Mat Etiquetage::render(Mat& img){
-	std::vector<Composante> comps;
+// Setter/Getter
+const std::vector<Composante>& Etiquetage::getComps() const{
+	return comps;
+}
 
+const std::vector<Composante>& Etiquetage::getOldComps() const{
+	return oldComps;
+}
+
+// Methodes
+Mat Etiquetage::render(Mat& img){
 	Mat res(img.clone());
 	
 	// Composante connexe
     comps = Composante::getComposantes(res,MAX_NB_COMP);
-    
-    std::cout << "comps size: " << comps.size() << std::endl;
     
     // Passage en couleur RGB
     // (RGB ET POURTANT BGR ??)
@@ -23,8 +31,8 @@ Mat Etiquetage::render(Mat& img){
     	circle(res, comp.getPosition(), 5, Scalar(0,0,255));
     }
     
-    /*oldComps.clear();
-    oldComps = comps;*/
+    oldComps.clear();
+    oldComps = comps;
     
     return res;
 }

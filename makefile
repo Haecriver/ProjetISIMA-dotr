@@ -33,23 +33,40 @@ LIBS = $(shell pkg-config --libs opencv)
 ### Liste des dependances de compilations (.hpp) ###
 DEPS =
 
-### Creation des noms des objets a creer ###
-_OBJ = main.o window.o display.o composante.o filtre.o bthreshold.o dilatation.o erosion.o grayscale.o etiquetage.o
-OBJ = $(patsubst %,$(OBJDIR)/%,$(_OBJ))
+### Nom des executables ###
+_EXEC = dotr stats
+EXEC = $(patsubst %,$(EXEDIR)/%,$(_EXEC))
 
-### Nom de l'executable ###
-_EXEC = dotr
-EXEC = $(EXEDIR)/$(_EXEC)
+### Fichiers communs a tous les executables ###
+_OBJ_COM = window.o display.o composante.o filtre.o bthreshold.o dilatation.o erosion.o grayscale.o etiquetage.o
+OBJ_COM = $(patsubst %,$(OBJDIR)/%,$(_OBJ_COM))
+
+### Fichiers dedies a un executable ###
+#### dotr ####
+_OBJ_VID = main_video.o
+OBJ_VID = $(patsubst %,$(OBJDIR)/%,$(_OBJ_VID))
+
+_OBJ_STA = main_stats.o
+OBJ_STA = $(patsubst %,$(OBJDIR)/%,$(_OBJ_STA))
+
+### Listes des fichiers objets ###
+OBJ = $(OBJ_COM) $(OBJ_VID) $(OBJ_STA)
 
 ## LISTE DES REGLES ##
 
 all:$(EXEC)
-    
-$(EXEC):$(OBJ)
-	$(CC) $(LDFLAGS) $(OBJ) $(LIBS) -o $@
+
+#$(EXEC):$(OBJ)
+#	$(CC) $(LDFLAGS) $^ $(LIBS) -o $@
+
+build/dotr:$(OBJ_VID) $(OBJ_COM)
+	$(CC) -o $@ $^ $(LDFLAGS) $(LIBS)
+
+build/stats:$(OBJ_STA) $(OBJ_COM)
+	$(CC) $(LDFLAGS) $^ $(LIBS) -o $@
 
 $(OBJDIR)/%.o:$(SRCDIR)/%.cpp $(DEPS)
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) -c -o $@ $< $(CFLAGS)
 	
 clean:
 	rm $(EXEC); rm $(OBJ)

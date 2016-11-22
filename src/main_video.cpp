@@ -5,10 +5,6 @@
  * \version 0.1
  */
  
-#include <string>
-#include <vector>
-
-#include "composante.hpp"
 #include "window.hpp"
 #include "display.hpp"
 

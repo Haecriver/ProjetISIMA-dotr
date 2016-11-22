@@ -8,9 +8,23 @@ class Dilatation : public Filtre {
 		Mat elementDilatation;
 		unsigned sizeDilatation;
 		unsigned nbDilatation;
+		int shape;
 	public:
-		Dilatation(unsigned pSizeDilatation, unsigned pNbDilatation);
+		// Constructeurs
+		Dilatation(unsigned pSizeDilatation, unsigned pNbDilatation, int pShape = MORPH_CROSS);
 		virtual ~Dilatation(){}
+		
+		// Setter/Getter
+		void setSizeDilatation(unsigned pSizeDilatation);
+		unsigned getSizeDilatation();
+		
+		void setNbDilatation(unsigned pNbDilatation);
+		unsigned getNbDilatation();
+		
+		void setShape(int pShape);
+		int getShape();
+		
+		// Methodes
 		Mat render(Mat& img);
 };
 

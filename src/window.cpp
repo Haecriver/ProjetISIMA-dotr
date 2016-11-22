@@ -105,6 +105,19 @@ void Window::renderAll(){
     }
 }
 
+unsigned Window::getNbValidPicture(unsigned nbCompToFind, Etiquetage* filtre_etiquetage_courant){
+	unsigned cpt = 0;
+	
+	// Pour chaque images chargees
+    for(Mat img: imgs){
+    	if(displays[0].isAllCompFound(nbCompToFind, filtre_etiquetage_courant, img)){
+    		cpt++;
+    	}
+    }
+    
+    return cpt;
+}
+
 void Window::addDisplay(Display display){
 	displays.push_back(display);
 }

@@ -1,5 +1,4 @@
-#ifndef WINDOW_HPP
-#define WINDOW_HPP
+#pragma once
 
 // Gestion du temps
 #include <chrono>
@@ -37,6 +36,8 @@ class Window{
 		void enregistrementImgs(std::string nameFile);
 		void renderAll();
 		
+		unsigned getNbValidPicture(unsigned nbCompToFind, Etiquetage* filtre_etiquetage_courant);
+		
 		void addDisplay(Display display);
 };
 
@@ -48,5 +49,3 @@ class Window{
  *  \return string representant l'entier
  */
 std::string setDigit(const int i, const int length);
-
-#endif
