@@ -67,7 +67,7 @@ int main(int argc, const char* argv[] )
 	unsigned MIN_NB_DIL = 1, MAX_NB_DIL = 3;
 	unsigned MIN_SIZE_DIL = 1, MAX_SIZE_DIL = 3;
 	
-	unsigned MIN_THRES = 100, MAX_THRES = 150;
+	unsigned MIN_THRES = 150, MAX_THRES = 200;
 	
 	unsigned nbEro, sizeEro, nbDil, sizeDil, thres, nbCompFound, cpt=0;
 	
