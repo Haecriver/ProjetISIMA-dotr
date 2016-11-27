@@ -28,40 +28,42 @@ void Composante::addPoint(Point point){
 
 void Composante::computeAtt(){
 
-	int xMean=0, yMean=0,
-		xMax=_points[0].x, xMin=_points[0].x, 
-		yMax=_points[0].y, yMin=_points[0].y;
-
-	// Parcours vecteur
-	for(Point point: _points){
-		// Sum
-		xMean+=point.x;
-		yMean+=point.y;
+	if(_points.size() != 0){
+		int xMean=0, yMean=0,
+			xMax=_points[0].x, xMin=_points[0].x, 
+			yMax=_points[0].y, yMin=_points[0].y;
 		
-		// Calcul width
-		if(xMax<point.x)
-			xMax=point.x;
+		// Parcours vecteur
+		for(Point point: _points){
+			// Sum
+			xMean+=point.x;
+			yMean+=point.y;
+		
+			// Calcul width
+			if(xMax<point.x)
+				xMax=point.x;
 			
-		if(xMin>point.x)
-			xMin=point.x;
+			if(xMin>point.x)
+				xMin=point.x;
 			
-		// Calcul height
-		if(yMax<point.y)
-			yMax=point.y;
+			// Calcul height
+			if(yMax<point.y)
+				yMax=point.y;
 			
-		if(yMin>point.y)
-			yMin=point.y;
+			if(yMin>point.y)
+				yMin=point.y;
+		}
+
+		// Calcul moyenne
+		xMean/=_points.size();
+		yMean/=_points.size();
+
+		// Ecriture attributs
+		_pos.x = xMean;
+		_pos.y = yMean;
+		_width = xMax - xMin;
+		_height = yMax - yMin;
 	}
-
-	// Calcul moyenne
-	xMean/=_points.size();
-	yMean/=_points.size();
-
-	// Ecriture attributs
-	_pos.x = xMean;
-	_pos.y = yMean;
-	_width = xMax - xMin;
-	_height = yMax - yMin;
 }
 
 void Composante::computeAComposante(Mat& copy, Point pPointCur){
@@ -79,7 +81,7 @@ void Composante::computeAComposante(Mat& copy, Point pPointCur){
 		//Robustesse
 		if((pointCur.x>=0 && pointCur.x<copy.rows) &&
 			(pointCur.y>=0 && pointCur.y<copy.cols) &&
-			copy.ptr(pointCur.y)[pointCur.x] == 255){
+			copy.ptr(pointCur.y)[pointCur.x] == MAX_BINARY_VALUE){
 					
 			addPoint(pointCur);				// On ajoute le point a la composante
 			copy.ptr(pointCur.y)[pointCur.x] = 0; 	// On passe le point a 0
@@ -93,7 +95,7 @@ void Composante::computeAComposante(Mat& copy, Point pPointCur){
 					// Si le coordonnees sont valides et que le voisin est egal a 1
 					isValide = (posx>=0 && posx<copy.rows) &&
 					  (posy>=0 && posy<copy.cols) &&
-					  (copy.ptr(posy)[posx] == 255);
+					  (copy.ptr(posy)[posx] == MAX_BINARY_VALUE);
 					
 					if(isValide){
 
@@ -118,7 +120,7 @@ std::vector<Composante> Composante::getComposantes(const Mat& src, unsigned max_
 	for(int j=0; j<copy.rows; j++){
 		for(int i=0; i<copy.cols; i++){	
 			// Si le pixel courant est elligible
-			if( copy.ptr(j)[i]!=0 && composantes.size() <= max_comp){
+			if( copy.ptr(j)[i] == MAX_BINARY_VALUE && composantes.size() <= max_comp){
 				// On creer un nouveau composant et on l'ajoute au vecteur resultat
 				composantes.push_back(Composante(copy, Point(i,j)));
 			}

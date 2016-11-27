@@ -38,7 +38,7 @@ _EXEC = dotr stats
 EXEC = $(patsubst %,$(EXEDIR)/%,$(_EXEC))
 
 ### Fichiers communs a tous les executables ###
-_OBJ_COM = window.o display.o composante.o filtre.o bthreshold.o dilatation.o erosion.o grayscale.o etiquetage.o
+_OBJ_COM = window.o display.o composante.o filtre.o bthreshold.o dilatation.o erosion.o grayscale.o etiquetage.o adathreshold.o
 OBJ_COM = $(patsubst %,$(OBJDIR)/%,$(_OBJ_COM))
 
 ### Fichiers dedies a un executable ###

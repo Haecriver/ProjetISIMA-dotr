@@ -24,6 +24,9 @@ class Composante{
 											(point le + haut - point le plus bas) */
 		unsigned			_width;		/*!< Largeur calculee de la composante 
 											(point le plus a droite - point le plus a gauche) */
+											
+		static unsigned const MAX_BINARY_VALUE = 255;
+		
 		/*!
 		 *  \brief Calculateur des attributs de la classe
 		 *
