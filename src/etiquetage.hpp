@@ -2,6 +2,8 @@
 #define ETIQUETAGE_HPP
 
 #include <vector>
+#include <tuple>
+#include <algorithm>
 
 #include "filtre.hpp"
 #include "composante.hpp"
@@ -9,8 +11,13 @@
 class Etiquetage : public Filtre {
 	private:
 		const unsigned MAX_NB_COMP;
+		static const unsigned DEPLACEMENT = 15;
+		
+		static const unsigned ITE_MAX = 20;
+		unsigned _cpt = 0;
+		
 		std::vector<Composante> comps;
-		std::vector<Composante> oldComps;
+		std::vector<std::pair<Composante, bool>> compsOrdonnees;
 
 	public :
 		// Contructeurs
@@ -19,7 +26,6 @@ class Etiquetage : public Filtre {
 		
 		// Setter/Getter
 		const std::vector<Composante>& getComps() const;
-		const std::vector<Composante>& getOldComps() const;
 		
 		// Methodes
 		Mat render(Mat& img);
