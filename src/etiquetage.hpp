@@ -11,6 +11,8 @@
 class Etiquetage : public Filtre {
 	private:
 		const unsigned MAX_NB_COMP;
+		const bool DETECT_SHAPE;
+		
 		static const unsigned DEPLACEMENT = 15;
 		
 		static const unsigned ITE_MAX = 20;
@@ -21,7 +23,7 @@ class Etiquetage : public Filtre {
 
 	public :
 		// Contructeurs
-		Etiquetage(unsigned pMaxNbComp = 5);
+		Etiquetage(unsigned pMaxNbComp = 5, bool pDetectShape = true);
 		virtual ~Etiquetage(){}
 		
 		// Setter/Getter

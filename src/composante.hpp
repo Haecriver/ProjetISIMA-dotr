@@ -89,7 +89,7 @@ class Composante{
 		/*!
 		 *  \brief Getter position
 		 */
-		Point getPosition(){
+		Point& getPosition(){
 			return _pos;
 		}
 		

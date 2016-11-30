@@ -31,10 +31,10 @@ int main(int argc, const char* argv[] )
 	// Parametrage de la sortie filtree
 	filtered.addFiltre(new Grayscale());
 	//filtered.addFiltre(new Adathreshold(0.1));
-	filtered.addFiltre(new Bthreshold(143)); // 143 res optimal
+	filtered.addFiltre(new Bthreshold(148)); // 148 res optimal
 	filtered.addFiltre(new Erosion(1,1));
 	filtered.addFiltre(new Dilatation(1,2));
-	filtered.addFiltre(new Etiquetage());
+	filtered.addFiltre(new Etiquetage(5,true));
 	
 	// Ajout des rendus a la fenetre
 	window.addDisplay(source);
