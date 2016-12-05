@@ -22,7 +22,7 @@ int main(int argc, const char* argv[] )
 	bool record_capture;
 	
 	//Chargements images
-	Window window("./rsc/Scenario_1_1/in1_", 517);
+	Window window("./rsc/Scenario_test/in_", 1000);
 	
 	// Creation des sorties
 	Display source;

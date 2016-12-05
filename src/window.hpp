@@ -4,6 +4,7 @@
 #include <chrono>
 #include <vector>
 #include <string>
+#include <stdexcept>
 
 #include <iostream>
 #include <iomanip>
@@ -23,7 +24,8 @@ class Window{
 		unsigned fps;
 		int msToWaitOpt = 1000/fps;	// Nombre de seconde a attendre dans le meilleur des cas
 		
-		std::vector<Mat> imgs;		// Liste des images chargees
+		//std::vector<Mat> imgs;		// Liste des images chargees
+		VideoCapture _imgs;
 		std::vector<Display> displays;
 		
 		VideoWriter outputVideo;

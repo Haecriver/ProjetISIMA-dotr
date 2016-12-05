@@ -42,13 +42,22 @@ Mat Window::catImages(std::vector<Mat> imgs)
 
 // Chargement des images
 void Window::chargementImgs(){
-	for(unsigned i=0;i<NB_IMG;i++){
+	/*for(unsigned i=0;i<NB_IMG;i++){
 		std::string pathimg_=PATH_RES+setDigit(i,4)+".jpg";
 		Mat temp = imread(pathimg_);
 		if (!temp.empty()){	// Si l'image a bien ete chargee
 			imgs.push_back(temp);
 		}
-	}
+	}*/
+	/*std::cout << PATH_RES + "%" + setDigit(NB_IMG,4) + "d.jpg" << std::endl;
+	_imgs.open(PATH_RES+ "%" + setDigit(NB_IMG,4) + "d.jpg");*/
+	
+	
+	std::cout << PATH_RES + "%04d.jpg" << std::endl;
+	_imgs.open(PATH_RES+ "%04d.jpg");
+	
+	 if( !_imgs.isOpened() )
+        throw std::domain_error("Error when reading steam_avi");
 }
 
 // On enregistre les images
@@ -64,14 +73,18 @@ void Window::enregistrementImgs(std::string nameFile){
 
 void Window::renderAll(){
 	std::vector<Mat> displayRenders;
-	Mat render;
+	Mat render, img;
 	
 	// Chrono pour les fps
 	std::chrono::time_point<std::chrono::system_clock> start, end;
 	int msToWait;				// Nombre de seconde a attendre entre chaque image
 		
 	// Pour chaque images chargees
-    for(Mat img: imgs){
+   // for(Mat img: imgs){
+   int i = 1;
+   while(_imgs.read(img)){	 
+		std::cout << i << std::endl;
+	     
     	start = std::chrono::system_clock::now();
     	for(Display display: displays){
     		displayRenders.push_back(display.render(img));
@@ -102,14 +115,18 @@ void Window::renderAll(){
 			std::cout << "ESC key pressed by user" << std::endl;
 			break; 
 		}
+		
+		i++;
     }
 }
 
 unsigned Window::getNbValidPicture(unsigned nbCompToFind, Etiquetage* filtre_etiquetage_courant){
 	unsigned cpt = 0;
+	Mat img;
 	
 	// Pour chaque images chargees
-    for(Mat img: imgs){
+   // for(Mat img: imgs){
+   while(_imgs.read(img)){
     	if(displays[0].isAllCompFound(nbCompToFind, filtre_etiquetage_courant, img)){
     		cpt++;
     	}
