@@ -1,0 +1,72 @@
+Meilleurs resultats
+
+Nb comp trouves  :	72
+Limite threshold :	145
+Nb d'erosions    :	1
+Size d'erosions  :	1
+Nb dilatations   :	1
+Size dilatations :	1
+
+Nb comp trouves  :	72
+Limite threshold :	144
+Nb d'erosions    :	1
+Size d'erosions  :	1
+Nb dilatations   :	1
+Size dilatations :	2
+
+Nb comp trouves  :	72
+Limite threshold :	144
+Nb d'erosions    :	1
+Size d'erosions  :	1
+Nb dilatations   :	1
+Size dilatations :	3
+
+Nb comp trouves  :	72
+Limite threshold :	144
+Nb d'erosions    :	1
+Size d'erosions  :	2
+Nb dilatations   :	1
+Size dilatations :	1
+
+Nb comp trouves  :	72
+Limite threshold :	144
+Nb d'erosions    :	1
+Size d'erosions  :	2
+Nb dilatations   :	1
+Size dilatations :	2
+
+Nb comp trouves  :	72
+Limite threshold :	144
+Nb d'erosions    :	1
+Size d'erosions  :	2
+Nb dilatations   :	1
+Size dilatations :	3
+
+Nb comp trouves  :	72
+Limite threshold :	144
+Nb d'erosions    :	1
+Size d'erosions  :	3
+Nb dilatations   :	1
+Size dilatations :	1
+
+Nb comp trouves  :	72
+Limite threshold :	144
+Nb d'erosions    :	1
+Size d'erosions  :	3
+Nb dilatations   :	1
+Size dilatations :	2
+
+Nb comp trouves  :	72
+Limite threshold :	144
+Nb d'erosions    :	1
+Size d'erosions  :	3
+Nb dilatations   :	1
+Size dilatations :	3
+
+Nb comp trouves  :	72
+Limite threshold :	144
+Nb d'erosions    :	1
+Size d'erosions  :	1
+Nb dilatations   :	1
+Size dilatations :	1
+

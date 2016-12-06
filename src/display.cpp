@@ -9,8 +9,11 @@ Display::~Display(){
 
 Mat Display::render(Mat& src){
 	Mat img(src.clone());
+	Mat temp;
 	for(Filtre* filtre: filtres){
-		img = filtre->render(img);
+		temp = filtre->render(img);
+		img.release();
+		img = temp;
 	}
 	return img;
 }

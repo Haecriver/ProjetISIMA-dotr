@@ -59,7 +59,7 @@ bool sortRes(statResult i, statResult j){
 int main(int argc, const char* argv[] )
 {
 	std::vector<statResult> results;
-	std::fstream file("res/res.csv", std::fstream::in | std::fstream::out | std::fstream::trunc);
+	std::fstream file("res/resRectangle111_200.csv", std::fstream::in | std::fstream::out | std::fstream::trunc);
 
 	unsigned MIN_NB_ERO = 1, MAX_NB_ERO = 3;
 	unsigned MIN_SIZE_ERO = 1, MAX_SIZE_ERO = 3;
@@ -67,7 +67,7 @@ int main(int argc, const char* argv[] )
 	unsigned MIN_NB_DIL = 1, MAX_NB_DIL = 3;
 	unsigned MIN_SIZE_DIL = 1, MAX_SIZE_DIL = 3;
 	
-	unsigned MIN_THRES = 150, MAX_THRES = 200;
+	unsigned MIN_THRES = 111, MAX_THRES = 200;
 	
 	unsigned nbEro, sizeEro, nbDil, sizeDil, thres, nbCompFound, cpt=0;
 	
@@ -88,9 +88,9 @@ int main(int argc, const char* argv[] )
 	
 	Grayscale* 	grayscale = new Grayscale();
 	Bthreshold* threshold = new Bthreshold(MIN_THRES);
-	Erosion* 	erosion = new Erosion(MIN_NB_ERO,MIN_SIZE_ERO,MORPH_CROSS);
-	Dilatation* dilatation = new Dilatation(MIN_NB_DIL,MIN_SIZE_DIL,MORPH_CROSS);
-	Etiquetage* etiquetage = new Etiquetage();
+	Erosion* 	erosion = new Erosion(MIN_NB_ERO,MIN_SIZE_ERO,MORPH_RECT);
+	Dilatation* dilatation = new Dilatation(MIN_NB_DIL,MIN_SIZE_DIL,MORPH_RECT);
+	Etiquetage* etiquetage = new Etiquetage(5,false);
 	
 	// Parametrage de la sortie filtree
 	filtered.addFiltre(grayscale);

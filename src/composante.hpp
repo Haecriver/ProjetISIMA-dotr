@@ -20,10 +20,12 @@ class Composante{
 	private:		
 		std::vector<Point> 	_points; 	/*!< Liste des points de la composante */
 		Point 				_pos;		/*!< Position (calculee) de la composante */
+		
 		unsigned			_height;		/*!< Hauteur calculee de la composante 
 											(point le + haut - point le plus bas) */
 		unsigned			_width;		/*!< Largeur calculee de la composante 
 											(point le plus a droite - point le plus a gauche) */
+		Point				_baseline;	/*!< Point ou commence la forme */
 											
 		static unsigned const MAX_BINARY_VALUE = 255;
 		

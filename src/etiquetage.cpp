@@ -15,7 +15,7 @@ const std::vector<Composante>& Etiquetage::getComps() const{
 
 // Methodes
 Mat Etiquetage::render(Mat& img){
-	Mat res(img.clone());
+	Mat res(img.clone()), resc;
 	bool fin;
 	Point pos_cur, pos_ord;
 	int moveX, moveY;
@@ -34,11 +34,13 @@ Mat Etiquetage::render(Mat& img){
     
     // Passage en couleur RGB
     // (RGB ET POURTANT BGR ??)
-    cvtColor(res, res, CV_GRAY2RGB);
+    if(res.channels() == 1){
+	    cvtColor(res, resc, CV_GRAY2RGB);
+    }
     
     // Detection des points calcules
     for(Composante comp : comps){
-    	circle(res, comp.getPosition(), 5, Scalar(0,0,255));
+    	circle(resc, comp.getPosition(), 5, Scalar(0,0,255));
     }
     
     // Detection de forme
@@ -133,12 +135,13 @@ Mat Etiquetage::render(Mat& img){
 			}
 
 			// On affiche le num de la comp
-			putText(res, std::to_string(i), comp.getPosition(), fontFace, fontScale,
+			putText(resc, std::to_string(i), comp.getPosition(), fontFace, fontScale,
 		    	color, thickness);
 		    	
 			// On lie les composantes par une ligne
-			line(res, comp.getPosition(), nextComp.getPosition(), Scalar(0, 255, 0));
+			line(resc, comp.getPosition(), nextComp.getPosition(), Scalar(0, 255, 0));
 		}
     }
-    return res;
+    res.release();
+    return resc;
 }
