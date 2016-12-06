@@ -14,7 +14,6 @@
 
 
 Composante::Composante(): 
-	//_points(2024),
 	_pos(0,0),
 	_height(0),
 	_width(0)
@@ -30,7 +29,6 @@ void Composante::addPoint(Point point){
 }
 
 void Composante::computeAtt(){
-	static Mat imageComp;
 	if(_points.size() != 0){
 		int xMean=0, yMean=0,
 			xMax=_points[0].x, xMin=_points[0].x, 
@@ -67,20 +65,17 @@ void Composante::computeAtt(){
 		
 		_baseline.x = xMin;
 		_baseline.y = yMin;
-		_width = xMax - xMin;
-		_height = yMax - yMin;
+		_width = xMax - xMin + 1;
+		_height = yMax - yMin + 1;
 		
 		// Creation de l'image de la comp
-		/*imageComp.create(_width,_height,CV_8SC1);
+		_image.create(_height,_width,CV_8SC1);
 		
 		for(Point point: _points){
 			int x = point.x - _baseline.x;
 			int y = point.y - _baseline.y;
-			imageComp.ptr(y)[x] = 255;
-		}
-		
-		imageComp.release();*/
-		
+			_image.ptr(y)[x] = 255;
+		}		
 	}
 }
 

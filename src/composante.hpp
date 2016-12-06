@@ -27,6 +27,8 @@ class Composante{
 											(point le plus a droite - point le plus a gauche) */
 		Point				_baseline;	/*!< Point ou commence la forme */
 											
+		Mat 				_image;
+											
 		static unsigned const MAX_BINARY_VALUE = 255;
 		
 		/*!

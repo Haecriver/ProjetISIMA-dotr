@@ -19,7 +19,6 @@ using namespace cv;
 class Window{
 	private:
 		const std::string PATH_RES;
-		const unsigned NB_IMG;
 		
 		unsigned fps;
 		int msToWaitOpt = 1000/fps;	// Nombre de seconde a attendre dans le meilleur des cas
@@ -31,7 +30,7 @@ class Window{
 		VideoWriter outputVideo;
 		
 	public:
-		Window(std::string pPathRes, unsigned pNbImg, unsigned pFps = 30);
+		Window(std::string pPathRes, unsigned pFps = 30);
 
 		Mat catImages(std::vector<Mat> imgs);
 		void chargementImgs();

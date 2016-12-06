@@ -1,6 +1,33 @@
 #include "etiquetage.hpp"
 #include <iostream>
 
+DetectedBlob::DetectedBlob(Composante& pcomp, bool pestimated)
+: comp(pcomp), estimated(pestimated), note(0)
+ {}
+
+void DetectedBlob::setComp(Composante& pcomp){
+	comp = pcomp;
+}
+
+Composante& DetectedBlob::getComp(){
+	return comp;
+}
+
+void DetectedBlob::setEstimated(bool pestimated){
+	estimated = pestimated;
+}
+
+const bool& DetectedBlob::isEstimated(){
+	return estimated;
+}
+
+void DetectedBlob::setNote(unsigned pnote){
+	note = pnote;
+}
+
+const unsigned& DetectedBlob::getNote(){
+	return note;
+}
 
 // Constructeur
 Etiquetage::Etiquetage(unsigned pMaxNbComp, bool pDetectShape):
@@ -15,10 +42,15 @@ const std::vector<Composante>& Etiquetage::getComps() const{
 
 // Methodes
 Mat Etiquetage::render(Mat& img){
+	
 	Mat res(img.clone()), resc;
-	bool fin;
 	Point pos_cur, pos_ord;
-	int moveX, moveY;
+	
+	unsigned distanceX, distanceY;
+	float distance2, distance2min;
+	int nbDetectedBlob, moveX, moveY;
+	
+	bool allBlopEstimated = false;
 	
 	// Preparation affichage text
 	int fontFace = CV_FONT_HERSHEY_COMPLEX_SMALL;
@@ -36,6 +68,8 @@ Mat Etiquetage::render(Mat& img){
     // (RGB ET POURTANT BGR ??)
     if(res.channels() == 1){
 	    cvtColor(res, resc, CV_GRAY2RGB);
+    }else{
+    	resc = res.clone();
     }
     
     // Detection des points calcules
@@ -49,13 +83,13 @@ Mat Etiquetage::render(Mat& img){
 		// Cas ou on initialise les points de l'objet detecte
 		if(compsOrdonnees.size() == 0 && comps.size() == MAX_NB_COMP){
 			for (Composante comp: comps){
-				compsOrdonnees.push_back(std::pair<Composante, bool>(comp,false));
+				compsOrdonnees.push_back(DetectedBlob(comp,false));
 			}
 	   	}
 	   	
 	   	// Dans tous les cas on repasse les booleans des compo ordonnees a false
-	   	for(std::pair<Composante, bool>& pair : compsOrdonnees){
-	   		pair.second = false;
+	   	for(DetectedBlob& dblop : compsOrdonnees){
+	   		dblop.setEstimated(false);
 	   	}
 		
 		// On va calculer le mouvement moyen de chaque point
@@ -64,41 +98,63 @@ Mat Etiquetage::render(Mat& img){
 		
 		// On cherche a identifier chaque point pour les remettre a leur place
 		// dans compsOrdonnees
+		nbDetectedBlob = 0;
 		for(Composante comp_cur: comps){
-			fin = false;
 			auto it = compsOrdonnees.begin();
+			auto closer = compsOrdonnees.end();
+			distance2min = -1;
+			
 			pos_cur = comp_cur.getPosition();
 			
-			while(!fin && it != compsOrdonnees.end()){
-				// Si l'iterator courant est elligible et n'a pas deja ete choisi
-				pos_ord = it->first.getPosition();
-				if(!it->second &&
-					(unsigned) abs(pos_cur.x - pos_ord.x) < DEPLACEMENT && 
-					(unsigned) abs(pos_cur.y - pos_ord.y) < DEPLACEMENT ){
-					
-					// On calcul la distance parcourue et on l'ajoute a la moyenne
-					moveX += (comp_cur.getPosition().x - it->first.getPosition().x);
-	   				moveY += (comp_cur.getPosition().y - it->first.getPosition().y);
-					
-					// On le remplace
-					it->first = comp_cur;
-					it->second = true;
-					fin = true;
+			// On va chercher le point detecter precedement le plus pret
+			while(it != compsOrdonnees.end()){
+				distanceX = (unsigned) abs(pos_cur.x - pos_ord.x);
+				distanceY = (unsigned) abs(pos_cur.y - pos_ord.y);
+				if (!it->isEstimated() &&
+					distanceX < DEPLACEMENT && 
+					distanceY < DEPLACEMENT
+				   ){
+					distance2 = distanceX*distanceX + distanceY*distanceY;
+				
+					if(distance2min == -1 || distance2 < distance2min){
+						distance2min = distance2;
+						closer = it;
+					}
 				}
 				++it;
+			}
+			
+			if(closer != compsOrdonnees.end()){
+				pos_ord = closer->getComp().getPosition();
+			
+				// On calcul la distance parcourue et on l'ajoute a la moyenne
+				moveX += (comp_cur.getPosition().x - closer->getComp().getPosition().x);
+				moveY += (comp_cur.getPosition().y - closer->getComp().getPosition().y);
+			
+				// On le remplace
+				closer->setComp(comp_cur);
+				closer->setEstimated(true);
+				
+				nbDetectedBlob++;
 			}
 		}
 		
 		// Calcul moyenne
-		if(comps.size()!=0){
-	   		moveX /= (int)comps.size();
-	   		moveY /= (int)comps.size();
+		if(nbDetectedBlob!=0){
+	   		moveX /= nbDetectedBlob;
+	   		moveY /= nbDetectedBlob;
 	   	}
 		
 		// Reste a assigner les points qui n'ont pas ete detectes
-		for(std::pair<Composante, bool>& pair : compsOrdonnees){
-	   		if(!pair.second){
-	   			Point& point = pair.first.getPosition();
+		allBlopEstimated = true;
+		for(DetectedBlob& dblob : compsOrdonnees){
+			// Si l'un des points n'est pas estime,
+			// le boolean est passe a false
+			allBlopEstimated = allBlopEstimated && !dblob.isEstimated();
+			
+			// Si le booleen est a estimer, on l'estime
+	   		if(!dblob.isEstimated()){
+	   			Point& point = dblob.getComp().getPosition();
 	   			point.x += moveX;
 	   			point.y += moveY;
 	   		}
@@ -106,7 +162,7 @@ Mat Etiquetage::render(Mat& img){
 		
 		// On gere le compteur, et on supprime eventuellement le vecteur
 		// de forme s'il n'a plus lieu d'etre
-		if(comps.size()==0){
+		if(comps.size()==0 || allBlopEstimated){
 			_cpt++;
 		}else{
 			_cpt=0;
@@ -123,12 +179,12 @@ Mat Etiquetage::render(Mat& img){
 		Scalar color;
 		for(unsigned i =0; i<compsOrdonnees.size(); i++){
 			// On initialise les ref de composantes
-			Composante& comp = compsOrdonnees[i].first;
+			Composante& comp = compsOrdonnees[i].getComp();
 			index_next_comp = (i + 1) % compsOrdonnees.size();
-			Composante& nextComp = compsOrdonnees[index_next_comp].first;
+			Composante& nextComp = compsOrdonnees[index_next_comp].getComp();
 			
 			// On choisit la couleur du point a utilise
-			if(compsOrdonnees[i].second){
+			if(compsOrdonnees[i].isEstimated()){
 				color = Scalar(0,255,0); // vert => point reel
 			} else {
 				color = Scalar(255,0,0); // rouge => point estime
@@ -143,5 +199,6 @@ Mat Etiquetage::render(Mat& img){
 		}
     }
     res.release();
+    
     return resc;
 }

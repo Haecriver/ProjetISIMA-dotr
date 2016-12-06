@@ -81,7 +81,7 @@ int main(int argc, const char* argv[] )
 	std::cout << "Nb d'iteration a faire : " << nbIterationTotal << std::endl;
 	
 	//Chargements images
-	Window window("./rsc/Scenario_1_1/in1_", 517);
+	Window window("./rsc/Scenario_1_1/in1_");
 	
 	// Creation des sorties
 	Display filtered;

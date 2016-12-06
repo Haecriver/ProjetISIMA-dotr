@@ -20,9 +20,16 @@ int main(int argc, const char* argv[] )
 {
 	// std::cerr << getBuildInformation() << std::endl;
 	bool record_capture;
+	std::string path_video;
+	
+	if(argc >= 2){
+		path_video = std::string(argv[1]);
+	} else {
+		path_video = "./rsc/Scenario_2/in_";
+	}
 	
 	//Chargements images
-	Window window("./rsc/Scenario_test/in_", 1000);
+	Window window(path_video);
 	
 	// Creation des sorties
 	Display source;
@@ -30,10 +37,9 @@ int main(int argc, const char* argv[] )
 	
 	// Parametrage de la sortie filtree
 	filtered.addFiltre(new Grayscale());
-	//filtered.addFiltre(new Adathreshold(0.1));
-	filtered.addFiltre(new Bthreshold(148)); // 148 res optimal
-	filtered.addFiltre(new Erosion(1,1));
-	filtered.addFiltre(new Dilatation(1,2));
+	filtered.addFiltre(new Bthreshold(240)); // 148 res optimal
+	filtered.addFiltre(new Erosion(0,1));
+	filtered.addFiltre(new Dilatation(0,1));
 	filtered.addFiltre(new Etiquetage(5,true));
 	
 	// Ajout des rendus a la fenetre

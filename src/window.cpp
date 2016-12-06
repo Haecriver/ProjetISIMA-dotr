@@ -1,8 +1,7 @@
 #include "window.hpp"
 
-Window::Window(std::string pPathRes, unsigned pNbImg, unsigned pFps):
+Window::Window(std::string pPathRes, unsigned pFps):
 PATH_RES(pPathRes),
-NB_IMG(pNbImg),
 fps(pFps),
 msToWaitOpt(1000/fps)	// Nombre de seconde a attendre dans le meilleur des cas
 {
@@ -42,22 +41,11 @@ Mat Window::catImages(std::vector<Mat> imgs)
 
 // Chargement des images
 void Window::chargementImgs(){
-	/*for(unsigned i=0;i<NB_IMG;i++){
-		std::string pathimg_=PATH_RES+setDigit(i,4)+".jpg";
-		Mat temp = imread(pathimg_);
-		if (!temp.empty()){	// Si l'image a bien ete chargee
-			imgs.push_back(temp);
-		}
-	}*/
-	/*std::cout << PATH_RES + "%" + setDigit(NB_IMG,4) + "d.jpg" << std::endl;
-	_imgs.open(PATH_RES+ "%" + setDigit(NB_IMG,4) + "d.jpg");*/
-	
-	
-	std::cout << PATH_RES + "%04d.jpg" << std::endl;
 	_imgs.open(PATH_RES+ "%04d.jpg");
 	
-	 if( !_imgs.isOpened() )
+	 if( !_imgs.isOpened() ){
         throw std::domain_error("Error when reading steam_avi");
+     }
 }
 
 // On enregistre les images
@@ -79,12 +67,11 @@ void Window::renderAll(){
 	std::chrono::time_point<std::chrono::system_clock> start, end;
 	int msToWait;				// Nombre de seconde a attendre entre chaque image
 		
+	// Booleen continue
+	bool cont = _imgs.read(img);
+
 	// Pour chaque images chargees
-   // for(Mat img: imgs){
-   int i = 1;
-   while(_imgs.read(img)){	 
-		std::cout << i << std::endl;
-	     
+   	while(cont){	      
     	start = std::chrono::system_clock::now();
     	for(Display display: displays){
     		displayRenders.push_back(display.render(img));
@@ -100,6 +87,10 @@ void Window::renderAll(){
     		outputVideo << render;
     	}
     	
+    	// On libere la memoires
+    	render.release();
+		img.release();
+    	
     	// On calcul le temps de l'application du filtre
 		end = std::chrono::system_clock::now();
 		std::chrono::duration<double> elapsed_seconds = end-start;
@@ -113,10 +104,11 @@ void Window::renderAll(){
 		int key = waitKey(msToWait);
 		if ( key == 27 || key == 'q'){
 			std::cout << "ESC key pressed by user" << std::endl;
-			break; 
-		}
-		
-		i++;
+			cont = false;
+		}else{
+			// increment
+			cont = _imgs.read(img);
+		}		
     }
 }
 
@@ -125,11 +117,11 @@ unsigned Window::getNbValidPicture(unsigned nbCompToFind, Etiquetage* filtre_eti
 	Mat img;
 	
 	// Pour chaque images chargees
-   // for(Mat img: imgs){
    while(_imgs.read(img)){
     	if(displays[0].isAllCompFound(nbCompToFind, filtre_etiquetage_courant, img)){
     		cpt++;
     	}
+    	img.release();
     }
     
     return cpt;
