@@ -11,7 +11,8 @@ class DetectedBlob {
 	private :
 		Composante comp;
 		bool estimated;
-		unsigned note; /*0-100*/
+		
+		float note; /*0-100% Depend de la forme de l'objet, si estimee elle tombe a 10%*/
 		
 	public:
 		DetectedBlob(Composante& pcomp, bool pestimated);
@@ -20,10 +21,12 @@ class DetectedBlob {
 		Composante& getComp();
 		
 		void setEstimated(bool pestimated);
-		const bool& isEstimated();
+		bool isEstimated() const;
 		
-		void setNote(unsigned pnote);
-		const unsigned& getNote();
+		void setNote(float pnote);
+		float getNote() const;
+		
+		void computeNote();
 };
 
 class Etiquetage : public Filtre {
@@ -33,12 +36,21 @@ class Etiquetage : public Filtre {
 		
 		static const unsigned DEPLACEMENT = 600;
 		
-		static const unsigned ITE_MAX = 20;
+		static const unsigned ITE_MAX = 15;
 		unsigned _cpt = 0;
 		
 		std::vector<Composante> comps;
 		std::vector<DetectedBlob> compsOrdonnees;
+		
+		float note; /*0-100*/
+		/* 100% de la note correspond a la moyenne des notes de chaque blob
+		   Si une composante est trouvee sont coef est 1, sont coef est 0.5
+		   
+		   (20% de la note peut  correspondre a la forme de l'objet)
+		*/
 
+		void detectShape(Mat& resc);
+		
 	public :
 		// Contructeurs
 		Etiquetage(unsigned pMaxNbComp = 5, bool pDetectShape = true);
@@ -49,6 +61,13 @@ class Etiquetage : public Filtre {
 		
 		// Methodes
 		Mat render(Mat& img);
+		
+		void assignDetectedCompToBlob(int& meanMoveX_OUT, int& meanMoveY_OUT);
+		void assignDetectedCompToBlob2(int& meanMoveX_OUT, int& meanMoveY_OUT);
+		bool estimateRemainingBlobs(const unsigned moveX, const unsigned moveY);
+		void drawShape(Mat& resc);
+		
+		void computeNote();
 };
 
 #endif
