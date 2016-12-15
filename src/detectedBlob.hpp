@@ -15,7 +15,11 @@ class DetectedBlob {
 		Composante comp;
 		bool estimated;	
 	
-		float note; /*0-100% Depend de la forme de l'objet, si estimee elle tombe a 10%*/
+		float note; /*0-100% Depend de :
+					- la forme de l'objet
+					- de son nombre de points
+					- de sa distance avec l'ancienne position
+			si estimee elle divisee par 4/5 a chaque ite*/
 		
 	public:
 		DetectedBlob(const Composante& pcomp, bool pestimated);

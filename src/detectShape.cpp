@@ -1,9 +1,17 @@
 #include "detectShape.hpp"
 #include <iostream>
 
+#define AFFICHER_ANGLE 0
+
+const float toDegree = 180/M_PI;
+
+
 DetectShape::DetectShape(const std::vector<Composante>& pcomps, unsigned pNbComps):
 NB_COMPS(pNbComps),
-comps(pcomps)
+comps(pcomps),
+initOppositePoints{ Point(0,0) },
+curOppositePoints{ nullptr },
+angle(0)
 {}
 
 Mat DetectShape::render(Mat& img){
@@ -17,9 +25,11 @@ Mat DetectShape::render(Mat& img){
 		for (Composante comp: comps){
 			compsOrdonnees.push_back(DetectedBlob(comp,false));
 		}
+		
+		assignOppositePoints();
    	}else{
    	
-	   	// Dans tous les cas il faut repasser les booleans des compo ordonnees a false
+	   	// Sinon il faut repasser les booleans des compo ordonnees a false
 	   	for(DetectedBlob& dblop : compsOrdonnees){
 	   		dblop.setEstimated(false);
 	   	}
@@ -28,6 +38,8 @@ Mat DetectShape::render(Mat& img){
 	assignDetectedCompToBlob(moveX, moveY);
 	
 	allBlopEstimated = estimateRemainingBlobs(moveX, moveY);
+	
+	computeAngle();
 	
 	// On gere le compteur, et on supprime eventuellement le vecteur
 	// de forme s'il n'a plus lieu d'etre
@@ -47,6 +59,37 @@ Mat DetectShape::render(Mat& img){
 	drawShape(res);
 	
 	return res;
+}
+
+void DetectShape::assignOppositePoints(){
+	// Init variables
+	unsigned distance2, distanceX, distanceY;
+	unsigned distance2Max = 0;
+	
+	// On parcours les blobs
+	for (DetectedBlob& db_i : compsOrdonnees){
+		for (DetectedBlob& db_j : compsOrdonnees){
+		
+			// Si on a deux blobs differents
+			if(&db_i != &db_j){
+				// Calcul de distance
+				distanceX = (unsigned) abs(db_i.getComp().getPosition().x - db_j.getComp().getPosition().x);
+				distanceY = (unsigned) abs(db_i.getComp().getPosition().y - db_j.getComp().getPosition().y);
+				distance2 = distanceX*distanceX + distanceY*distanceY;
+				
+				if(distance2Max < distance2){
+					// On assigne les points oppose
+					distance2Max = distance2;
+					curOppositePoints[0] = &db_i;
+					curOppositePoints[1] = &db_j;
+				}
+			}
+		}
+	}
+	
+	initOppositePoints[0] = Point(curOppositePoints[0]->getComp().getPosition());
+	initOppositePoints[1] = Point(curOppositePoints[1]->getComp().getPosition());
+	angle = 0;
 }
 
 void DetectShape::assignDetectedCompToBlob(int& meanMoveX_OUT, int& meanMoveY_OUT){
@@ -100,7 +143,7 @@ void DetectShape::assignDetectedCompToBlob(int& meanMoveX_OUT, int& meanMoveY_OU
 			}
 			noteProportion *= 100.0;
 			
-			// Note distance
+			
 			pos_cur = it->getPosition();
 			
 			distanceX = (unsigned) abs(pos_cur.x - pos_ord.x);
@@ -166,6 +209,27 @@ bool DetectShape::estimateRemainingBlobs(const unsigned moveX, const unsigned mo
    	return allBlopEstimated;
 }
 
+void DetectShape::computeAngle(){
+	angle = 0;
+	
+	if(curOppositePoints[0] != nullptr && curOppositePoints[1]!= nullptr){
+		angle = (atan2(initOppositePoints[0].y,initOppositePoints[0].x) -
+			atan2(curOppositePoints[0]->getComp().getPosition().y,curOppositePoints[0]->getComp().getPosition().x)) * toDegree;
+	}
+}
+
+void DetectShape::computeNote(){
+	note = 0.0;
+	float coef_notes_blobs = 1.0;
+	if(compsOrdonnees.size() != 0){
+		for(DetectedBlob& dblob : compsOrdonnees){
+			note += dblob.getNote();
+		}
+		note /= compsOrdonnees.size();
+	}
+	note *= coef_notes_blobs;
+}
+
 void DetectShape::drawShape(Mat& resc){
 	int index_next_comp;
 	
@@ -177,46 +241,49 @@ void DetectShape::drawShape(Mat& resc){
 	int baseline = 0;
 	baseline += thickness;
 	
-	// On affiche compsOrdonnees avec ses points
-	for(unsigned i =0; i<compsOrdonnees.size(); i++){
-		// On initialise les ref de composantes
-		Composante& comp = compsOrdonnees[i].getComp();
-		index_next_comp = (i + 1) % compsOrdonnees.size();
-		Composante& nextComp = compsOrdonnees[index_next_comp].getComp();
+	if(compsOrdonnees.size() != 0){
+
+#if AFFICHER_ANGLE
+		// On trace la droite qui relit les 2 points opposes
+		line(resc, curOppositePoints[0]->getComp().getPosition(), 
+			curOppositePoints[1]->getComp().getPosition(), 
+			Scalar(255, 0, 255), 3);
 		
-		// On choisit la couleur du point a utilise
-		if(compsOrdonnees[i].isEstimated()){
-			color = Scalar(0,255,0); // vert => point reel
-		} else {
-			color = Scalar(255,0,0); // rouge => point estime
-		}
+		// On affiche l'angle courant
+		putText(resc, "Angle:" + std::to_string(angle),  Point(10,40), fontFace, fontScale,
+	    	Scalar(255, 0, 255), thickness);
+#endif
+	
+		// On affiche compsOrdonnees avec ses points
+		for(unsigned i =0; i<compsOrdonnees.size(); i++){
+			// On initialise les ref de composantes
+			Composante& comp = compsOrdonnees[i].getComp();
+			index_next_comp = (i + 1) % compsOrdonnees.size();
+			Composante& nextComp = compsOrdonnees[index_next_comp].getComp();
 		
-		std::string toPrint = std::to_string(i);
-		if(false){
-			toPrint += "(" + std::to_string(compsOrdonnees[i].getNote()) + ")";
+			// On choisit la couleur du point a utilise
+			if(compsOrdonnees[i].isEstimated()){
+				color = Scalar(0,255,0); // vert => point reel
+			} else {
+				color = Scalar(255,0,0); // rouge => point estime
+			}
+		
+			std::string toPrint = std::to_string(i);
+			if(false){
+				toPrint += "(" + std::to_string(compsOrdonnees[i].getNote()) + ")";
+			}
+			// On affiche le num de la comp
+			putText(resc, toPrint, comp.getPosition(), fontFace, fontScale,
+				color, thickness);
+				
+			// On lie les composantes par une ligne
+			line(resc, comp.getPosition(), nextComp.getPosition(), Scalar(0, 255, 0));
 		}
-		// On affiche le num de la comp
-		putText(resc, toPrint, comp.getPosition(), fontFace, fontScale,
-	    	color, thickness);
-	    	
-		// On lie les composantes par une ligne
-		line(resc, comp.getPosition(), nextComp.getPosition(), Scalar(0, 255, 0));
 	}
 	
 	// Affichage de la note
 	putText(resc, "Note : " + std::to_string(note), Point(10,20), fontFace, fontScale,
 	    	Scalar(255, 0, 0), thickness);
-}
-
-void DetectShape::computeNote(){
-	note = 0.0;
-	float coef_notes_blobs = 1.0;
-	for(DetectedBlob& dblob : compsOrdonnees){
-		//dblob.computeNote();
-		note += dblob.getNote();
-	}
-	note /= compsOrdonnees.size();
-	note *= coef_notes_blobs;
 }
 
 float DetectShape::computeDistanceMin(const DetectedBlob& comp_ord, const std::vector<Composante>& comps_copy){
