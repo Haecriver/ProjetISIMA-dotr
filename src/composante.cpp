@@ -11,13 +11,25 @@
 #include <stack>
 #include <opencv2/imgproc/imgproc.hpp>
 
-
-
 Composante::Composante(): 
 	_pos(0,0),
 	_height(0),
 	_width(0)
 	 {}
+	 
+Composante::Composante(const Composante& cpy):
+		_height(cpy._height),
+		_width(cpy._width),
+		_image(cpy._image.clone())
+{
+	_pos.x = cpy._pos.x;
+	_pos.y = cpy._pos.y;
+		
+	_baseline.x = cpy._baseline.x;
+	_baseline.y = cpy._baseline.y;
+	
+	_points.assign(cpy._points.begin(), cpy._points.end());
+}
 	
 Composante::Composante(Mat& copy, Point pointCur): Composante(){
 	computeAComposante(copy, pointCur);
@@ -125,7 +137,7 @@ void Composante::computeAComposante(Mat& copy, Point pPointCur){
 	}
 }
 		
-std::vector<Composante> Composante::getComposantes(const Mat& src, unsigned max_comp){
+std::vector<Composante> Composante::getComposantes(const Mat& src){
 	Mat copy(src.clone()); // Copy de la ref courante
 	std::vector<Composante> composantes;
 	
@@ -133,7 +145,7 @@ std::vector<Composante> Composante::getComposantes(const Mat& src, unsigned max_
 	for(int j=0; j<copy.rows; j++){
 		for(int i=0; i<copy.cols; i++){	
 			// Si le pixel courant est elligible
-			if( copy.ptr(j)[i] == MAX_BINARY_VALUE && composantes.size() <= max_comp){
+			if( copy.ptr(j)[i] == MAX_BINARY_VALUE){
 				// On creer un nouveau composant et on l'ajoute au vecteur resultat
 				composantes.push_back(Composante(copy, Point(i,j)));
 			}

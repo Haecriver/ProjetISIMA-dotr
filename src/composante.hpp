@@ -71,6 +71,8 @@ class Composante{
 		 */
 		Composante(Mat& copy, Point pointCur);
 		
+		Composante(const Composante& cpy);
+		
 		/*!
 		 *  \brief Construction de vecteur composante
 		 *
@@ -81,7 +83,7 @@ class Composante{
 		 *  \param src : Reference constante vers l'image a traiter.
 		 *  \return Le vecteur de composantes connexes de l'image.
 		 */
-		static std::vector<Composante> getComposantes(const Mat& src, unsigned max_comp);
+		static std::vector<Composante> getComposantes(const Mat& src);
 			
 		/*!
 		 *  \brief Ajout de point
@@ -97,6 +99,10 @@ class Composante{
 			return _pos;
 		}
 		
+		const Point& getPosition() const{
+			return _pos;
+		}
+		
 		unsigned getWidth(){
 			return _width;
 		}
@@ -104,6 +110,11 @@ class Composante{
 		unsigned getHeight(){
 			return _height;
 		}
+		
+		const std::vector<Point>& getPoints() const{
+			return _points;
+		}
+		
 };
 
 #endif

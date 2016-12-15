@@ -90,7 +90,7 @@ int main(int argc, const char* argv[] )
 	Bthreshold* threshold = new Bthreshold(MIN_THRES);
 	Erosion* 	erosion = new Erosion(MIN_NB_ERO,MIN_SIZE_ERO,MORPH_RECT);
 	Dilatation* dilatation = new Dilatation(MIN_NB_DIL,MIN_SIZE_DIL,MORPH_RECT);
-	Etiquetage* etiquetage = new Etiquetage(5,false);
+	Etiquetage* etiquetage = new Etiquetage();
 	
 	// Parametrage de la sortie filtree
 	filtered.addFiltre(grayscale);

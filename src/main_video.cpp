@@ -15,6 +15,7 @@
 #include "dilatation.hpp"
 #include "etiquetage.hpp"
 #include "adathreshold.hpp"
+#include "detectShape.hpp"
 
 int main(int argc, const char* argv[] )
 {
@@ -29,18 +30,21 @@ int main(int argc, const char* argv[] )
 	}
 	
 	//Chargements images
-	Window window(path_video);
+	Window window(path_video, 20);
 	
 	// Creation des sorties
 	Display source;
 	Display filtered;
+	
+	Etiquetage* filtreEtiquetage = new Etiquetage();
 	
 	// Parametrage de la sortie filtree
 	filtered.addFiltre(new Grayscale());
 	filtered.addFiltre(new Bthreshold(240)); // 148 res optimal
 	filtered.addFiltre(new Erosion(0,1));
 	filtered.addFiltre(new Dilatation(0,1));
-	filtered.addFiltre(new Etiquetage(5,true));
+	filtered.addFiltre(filtreEtiquetage);
+	filtered.addFiltre(new DetectShape(filtreEtiquetage->getComps(),5));
 	
 	// Ajout des rendus a la fenetre
 	window.addDisplay(source);
