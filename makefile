@@ -34,22 +34,22 @@ LIBS = $(shell pkg-config --libs opencv)
 DEPS =
 
 ### Nom des executables ###
-_EXEC = dotr stats
+_EXEC = dotr stats calibration
 EXEC = $(patsubst %,$(EXEDIR)/%,$(_EXEC))
 
 ### Fichiers communs a tous les executables ###
-_OBJ_COM = window.o display.o composante.o filtre.o bthreshold.o dilatation.o \
-			erosion.o grayscale.o etiquetage.o adathreshold.o detectShape.o detectedBlob.o
+_OBJ_COM = window display composante filtre bthreshold dilatation \
+			erosion grayscale etiquetage adathreshold detectShape detectedBlob
 			
-OBJ_COM = $(patsubst %,$(OBJDIR)/%,$(_OBJ_COM))
+OBJ_COM = $(patsubst %,$(OBJDIR)/%.o,$(_OBJ_COM))
 
 ### Fichiers dedies a un executable ###
 #### dotr ####
-_OBJ_VID = main_video.o
-OBJ_VID = $(patsubst %,$(OBJDIR)/%,$(_OBJ_VID))
+_OBJ_VID = main_video
+OBJ_VID = $(patsubst %,$(OBJDIR)/%.o,$(_OBJ_VID))
 
-_OBJ_STA = main_stats.o
-OBJ_STA = $(patsubst %,$(OBJDIR)/%,$(_OBJ_STA))
+_OBJ_STA = main_stats
+OBJ_STA = $(patsubst %,$(OBJDIR)/%.o,$(_OBJ_STA))
 
 ### Listes des fichiers objets ###
 OBJ = $(OBJ_COM) $(OBJ_VID) $(OBJ_STA)
@@ -62,12 +62,19 @@ all:$(EXEC)
 #	$(CC) $(LDFLAGS) $^ $(LIBS) -o $@
 
 build/dotr:$(OBJ_VID) $(OBJ_COM)
-	$(CC) -o $@ $^ $(LDFLAGS) $(LIBS)
+	$(CC) $^ $(LDFLAGS) $(LIBS) -o $@
 
 build/stats:$(OBJ_STA) $(OBJ_COM)
-	$(CC) $(LDFLAGS) $^ $(LIBS) -o $@
+	$(CC) $^ $(LDFLAGS) $(LIBS) -o $@
 
 $(OBJDIR)/%.o:$(SRCDIR)/%.cpp $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
+	
+# Projet calibration
+build/calibration:$(OBJDIR)/calibration.o
+	$(CC) $^ $(LDFLAGS) $(LIBS) -o $@
+	
+$(OBJDIR)/calibration.o: calibration/calibration.cpp
 	$(CC) -c -o $@ $< $(CFLAGS)
 	
 clean:
