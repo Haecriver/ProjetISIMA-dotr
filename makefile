@@ -22,6 +22,8 @@ SRCDIR = src
 OBJDIR = obj
 EXEDIR = build
 
+SRCCALDIR = calibration
+
 ### Compilateur ###
 CC = g++
 
@@ -34,7 +36,7 @@ LIBS = $(shell pkg-config --libs opencv)
 DEPS =
 
 ### Nom des executables ###
-_EXEC = dotr stats calibration
+_EXEC = dotr stats calibration imagelist_creator
 EXEC = $(patsubst %,$(EXEDIR)/%,$(_EXEC))
 
 ### Fichiers communs a tous les executables ###
@@ -74,7 +76,10 @@ $(OBJDIR)/%.o:$(SRCDIR)/%.cpp $(DEPS)
 build/calibration:$(OBJDIR)/calibration.o
 	$(CC) $^ $(LDFLAGS) $(LIBS) -o $@
 	
-$(OBJDIR)/calibration.o: calibration/calibration.cpp
+build/imagelist_creator:$(OBJDIR)/imagelist_creator.o
+	$(CC) $^ $(LDFLAGS) $(LIBS) -o $@
+	
+$(OBJDIR)/%.o: $(SRCCALDIR)/%.cpp
 	$(CC) -o $@ $< $(CFLAGS)
 	
 clean:
