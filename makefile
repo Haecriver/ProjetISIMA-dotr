@@ -68,14 +68,14 @@ build/stats:$(OBJ_STA) $(OBJ_COM)
 	$(CC) $^ $(LDFLAGS) $(LIBS) -o $@
 
 $(OBJDIR)/%.o:$(SRCDIR)/%.cpp $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -o $@ $< $(CFLAGS)
 	
 # Projet calibration
 build/calibration:$(OBJDIR)/calibration.o
 	$(CC) $^ $(LDFLAGS) $(LIBS) -o $@
 	
 $(OBJDIR)/calibration.o: calibration/calibration.cpp
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -o $@ $< $(CFLAGS)
 	
 clean:
 	rm $(EXEC); rm $(OBJ)
