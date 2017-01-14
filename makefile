@@ -41,7 +41,8 @@ EXEC = $(patsubst %,$(EXEDIR)/%,$(_EXEC))
 
 ### Fichiers communs a tous les executables ###
 _OBJ_COM = window display composante filtre bthreshold dilatation \
-			erosion grayscale etiquetage adathreshold detectShape detectedBlob
+			erosion grayscale etiquetage adathreshold detectShape \
+			detectedBlob
 			
 OBJ_COM = $(patsubst %,$(OBJDIR)/%.o,$(_OBJ_COM))
 
@@ -81,6 +82,10 @@ build/imagelist_creator:$(OBJDIR)/imagelist_creator.o
 	
 $(OBJDIR)/%.o: $(SRCCALDIR)/%.cpp
 	$(CC) -o $@ $< $(CFLAGS)
+
+# Capture de video
+build/cam_capture:$(OBJDIR)/video_capture.o
+	$(CC) $^ $(LDFLAGS) $(LIBS) -o $@
 	
 clean:
 	rm $(EXEC); rm $(OBJ)
