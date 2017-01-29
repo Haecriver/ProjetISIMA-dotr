@@ -36,7 +36,7 @@ LIBS = $(shell pkg-config --libs opencv)
 DEPS =
 
 ### Nom des executables ###
-_EXEC = dotr stats calibration imagelist_creator
+_EXEC = dotr stats calibration imagelist_creator cross_ratio
 EXEC = $(patsubst %,$(EXEDIR)/%,$(_EXEC))
 
 ### Fichiers communs a tous les executables ###
@@ -82,10 +82,10 @@ build/imagelist_creator:$(OBJDIR)/imagelist_creator.o
 	
 $(OBJDIR)/%.o: $(SRCCALDIR)/%.cpp
 	$(CC) -o $@ $< $(CFLAGS)
-
-# Capture de video
-build/cam_capture:$(OBJDIR)/video_capture.o
-	$(CC) $^ $(LDFLAGS) $(LIBS) -o $@
+	
+# Cross ratio
+build/cross_ratio:$(OBJDIR)/crossRatio.o
+	$(CC) $^ -o $@
 	
 clean:
 	rm $(EXEC); rm $(OBJ)
