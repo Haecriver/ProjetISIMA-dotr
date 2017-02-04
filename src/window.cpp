@@ -1,9 +1,10 @@
 #include "window.hpp"
 
-Window::Window(std::string pPathRes, unsigned pFps):
+Window::Window(std::string pPathRes, unsigned pFps, bool pImageMode):
 PATH_RES(pPathRes),
 fps(pFps),
-msToWaitOpt(1000/fps)	// Nombre de seconde a attendre dans le meilleur des cas
+msToWaitOpt(1000/fps),	// Nombre de seconde a attendre dans le meilleur des cas
+imageMode(pImageMode)
 {
 	chargementImgs();
 }
@@ -107,7 +108,9 @@ void Window::renderAll(){
 			cont = false;
 		}else{
 			// increment
-			cont = _imgs.read(img);
+			if(!imageMode){
+				cont = _imgs.read(img);
+			}
 		}		
     }
 }
