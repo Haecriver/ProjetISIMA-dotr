@@ -9,12 +9,12 @@ using namespace cv;
 
 class LinePoint {
 	private:
-		const Point& pos;
+		Point pos;
 		bool belongsToLine = false;
 		
 	public:
 		LinePoint();
-		LinePoint(const Point& pPos);
+		LinePoint(Point pPos);
 		
 		static std::vector<LinePoint> convertCompToLinePoint(const std::vector<Composante>& comps);
 		

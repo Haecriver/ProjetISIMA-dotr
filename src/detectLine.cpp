@@ -1,7 +1,7 @@
 #include "detectLine.hpp"
 
-static std::random_device rd;
-static std::mt19937 gen(rd());
+std::random_device rd;
+std::mt19937 gen(rd());
 
 // Contructeurs
 DetectLine::DetectLine(const std::vector<Composante>& pcomps):
@@ -27,17 +27,23 @@ void DetectLine::getLinesFromPoints(){
 	bool searchingForPoints = true;
 		
 	allPoints = LinePoint::convertCompToLinePoint(comps);
-	for(LinePoint pt : allPoints){
-		lonelyPoints.push_back(&pt);
+	for(unsigned i = 0; i < allPoints.size(); i++){
+		lonelyPoints.push_back(&allPoints[i]);
 	}
+	
+	/*for(LinePoint* ptpt : lonelyPoints){
+		std::cout << "fill x:"<<ptpt->getPos().x << " y:" <<ptpt->getPos().y<< std::endl;
+	}*/
 	
 	while(searchingForLines){
 		// Point pivot
 		LinePoint* pt_pivot = selectRandomPoint(lonelyPoints);
+		//std::cout << "out x:"<<pt_pivot->getPos().x << " y:" << pt_pivot->getPos().y<< std::endl;
 		searchingForPoints = true;
 		
 		while(searchingForPoints){
 			LinePoint* pt_cur = selectRandomPoint(lonelyPoints);
+			//std::cout << "in x:"<<pt_cur->getPos().x << " y:" << pt_cur->getPos().y<< std::endl;
 			Line lineCur(pt_pivot->getPos(), pt_cur->getPos());
 			
 			if(lineCur.getIncludedPoints(allPoints)){
