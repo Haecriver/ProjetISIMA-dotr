@@ -16,8 +16,15 @@ Line::Line(Point p1, Point p2) : Line(0.0,0.0) {
 		pj = p1;
 	}
 
-	a = (pi.y - pj.y) / (pi.x - pj.x);
-	b = pi.y - a * pi.x;
+	if(pi.x != pj.x){
+		a = (pi.y - pj.y) / (pi.x - pj.x);
+		b = pi.y - a * pi.x;
+		std::cout << "ok" << std::endl;
+	}else{
+		a = 0;
+		b = 0;
+		std::cout << "Erreur, p1 = p2" << std::endl;
+	}
 }
 
 bool Line::getIncludedPoints(vector<LinePoint>& allPoints){

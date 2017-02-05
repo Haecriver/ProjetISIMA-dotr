@@ -1,5 +1,8 @@
 #include "detectLine.hpp"
 
+static std::random_device rd;
+static std::mt19937 gen(rd());
+
 // Contructeurs
 DetectLine::DetectLine(const std::vector<Composante>& pcomps):
 comps(pcomps)
@@ -30,11 +33,11 @@ void DetectLine::getLinesFromPoints(){
 	
 	while(searchingForLines){
 		// Point pivot
-		LinePoint* pt_pivot = *selectRandomPoint(lonelyPoints);
+		LinePoint* pt_pivot = selectRandomPoint(lonelyPoints);
 		searchingForPoints = true;
 		
 		while(searchingForPoints){
-			LinePoint* pt_cur = *selectRandomPoint(lonelyPoints);
+			LinePoint* pt_cur = selectRandomPoint(lonelyPoints);
 			Line lineCur(pt_pivot->getPos(), pt_cur->getPos());
 			
 			if(lineCur.getIncludedPoints(allPoints)){
@@ -54,11 +57,7 @@ void DetectLine::getLinesFromPoints(){
 	}
 }
 
-vector<LinePoint*>::iterator DetectLine::selectRandomPoint(std::vector<LinePoint*> pts) {
-	vector<LinePoint*>::iterator start = pts.begin();
-	static std::random_device rd;
-    static std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, std::distance(start, pts.end()) - 1);
-    std::advance(start, dis(gen));
-    return start;
+LinePoint* DetectLine::selectRandomPoint(std::vector<LinePoint*> pts) {
+    std::uniform_int_distribution<> dis(0, std::distance(pts.begin(), pts.end()) - 1);
+    return pts[dis(gen)];
 }

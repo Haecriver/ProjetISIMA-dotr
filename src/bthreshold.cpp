@@ -15,6 +15,6 @@ unsigned Bthreshold::getThresholdValue(){
 
 Mat Bthreshold::render(Mat& img){
 	Mat res;
-	threshold(img, res, thresholdValue, MAX_BINARY_VALUE, THRESHOLD_TYPE );
+	threshold(img, res, thresholdValue, MAX_BINARY_VALUE, THRESHOLD_TYPE ); 
 	return res;
 }

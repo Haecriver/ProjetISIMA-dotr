@@ -22,7 +22,7 @@ class DetectLine : public Filtre{
 		// Methodes
 		Mat render(Mat& img);
 		void getLinesFromPoints();
-		static vector<LinePoint*>::iterator selectRandomPoint(std::vector<LinePoint*> pts);
+		static LinePoint* selectRandomPoint(std::vector<LinePoint*> pts);
 };
 
 

@@ -43,10 +43,10 @@ Mat Window::catImages(std::vector<Mat> imgs)
 // Chargement des images
 void Window::chargementImgs(){
 	_imgs.open(PATH_RES+ "%04d.jpg");
-	
-	 if( !_imgs.isOpened() ){
-        throw std::domain_error("Error when reading steam_avi");
-     }
+
+	if( !_imgs.isOpened() ){
+		throw std::domain_error("Error when reading steam_avi");
+	}
 }
 
 // On enregistre les images
@@ -70,36 +70,42 @@ void Window::renderAll(){
 		
 	// Booleen continue
 	bool cont = _imgs.read(img);
+	bool freeze = false;
 
 	// Pour chaque images chargees
    	while(cont){	      
-    	start = std::chrono::system_clock::now();
-    	for(Display display: displays){
-    		displayRenders.push_back(display.render(img));
-    	}
-    	
-    	render = catImages(displayRenders);
-    	
-    	displayRenders.clear();
-    	
-    	imshow("Rendu",render);
-    	
-    	if(outputVideo.isOpened()){
-    		outputVideo << render;
-    	}
-    	
-    	// On libere la memoires
-    	render.release();
-		img.release();
-    	
-    	// On calcul le temps de l'application du filtre
-		end = std::chrono::system_clock::now();
-		std::chrono::duration<double> elapsed_seconds = end-start;
-		msToWait = msToWaitOpt - elapsed_seconds.count();
+	   	if(!freeze){
+			start = std::chrono::system_clock::now();
+			for(Display display: displays){
+				displayRenders.push_back(display.render(img));
+			}
+			
+			render = catImages(displayRenders);
+			
+			displayRenders.clear();
+			
+			imshow("Rendu",render);
+			
+			if(outputVideo.isOpened()){
+				outputVideo << render;
+			}
+			
+			// On libere la memoires
+			render.release();
+			img.release();
+			
+			// On calcul le temps de l'application du filtre
+			end = std::chrono::system_clock::now();
+			std::chrono::duration<double> elapsed_seconds = end-start;
+			msToWait = msToWaitOpt - elapsed_seconds.count();
 		
-		// Si <0, cela veut dire que l'on a pas a attendre pour afficher l'image suivante
-		if(msToWait<0)
+			// Si <0, cela veut dire que l'on a pas a attendre pour afficher l'image suivante
+			if(msToWait<0){
+				msToWait=0;
+			}
+		}else{
 			msToWait=0;
+		}
 		
 		// On attend pend msToWait ms l'appuie sur la touche ESC
 		int key = waitKey(msToWait);
@@ -110,6 +116,8 @@ void Window::renderAll(){
 			// increment
 			if(!imageMode){
 				cont = _imgs.read(img);
+			}else{
+				freeze = true;
 			}
 		}		
     }
