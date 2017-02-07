@@ -11,6 +11,7 @@ class LinePoint {
 	private:
 		Point pos;
 		bool belongsToLine = false;
+		bool pivot = false;
 		
 	public:
 		LinePoint();
@@ -28,6 +29,14 @@ class LinePoint {
 		
 		void setBelongsToLine(bool val){
 			belongsToLine = val;
+		}
+		
+		bool isPivot() const{
+			return pivot;
+		}
+		
+		void setPivot(bool val){
+			pivot = val;
 		}
 		
 		double getDistance(const LinePoint& pt) const{
