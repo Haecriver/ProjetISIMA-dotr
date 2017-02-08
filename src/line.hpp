@@ -10,13 +10,12 @@
 
 class Line{
 	private:
-		std::vector<LinePoint*> pts;
-		double a;
-		double b;
-		const unsigned NB_POINTS;
-		const static unsigned EPSILON = 2.0; // Marge erreur
-		
-		double crossRatio;
+		std::vector<LinePoint*> pts;			// Liste des points passant par cette droite
+		double a;								// Coefficient a de l'equation y = ax + b
+		double b;								// Biais de l'equation y = ax + b
+		const unsigned NB_POINTS;				// Nombre de points contenus par droite
+		const static unsigned EPSILON = 2.0; 	// Marge erreur
+		double crossRatio;						// Cross ratio de la droite
 		
 	public:
 		// Contructeurs

@@ -9,9 +9,8 @@ using namespace cv;
 
 class LinePoint {
 	private:
-		Point pos;
-		bool belongsToLine = false;
-		bool pivot = false;
+		Point pos;						// Position du point
+		bool belongsToLine = false;		// true si le point appartient a une ligne
 		
 	public:
 		LinePoint();
@@ -29,14 +28,6 @@ class LinePoint {
 		
 		void setBelongsToLine(bool val){
 			belongsToLine = val;
-		}
-		
-		bool isPivot() const{
-			return pivot;
-		}
-		
-		void setPivot(bool val){
-			pivot = val;
 		}
 		
 		double getDistance(const LinePoint& pt) const{

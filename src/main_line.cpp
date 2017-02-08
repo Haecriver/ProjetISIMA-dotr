@@ -34,7 +34,7 @@ int main(int argc, const char* argv[] )
 	
 	Bthreshold* filtreBthreshold = new Bthreshold(200);
 	Etiquetage* filtreEtiquetage = new Etiquetage();
-	DetectLine* filtreDetectLine = new DetectLine(filtreEtiquetage->getComps());
+	DetectLine* filtreDetectLine = new DetectLine(filtreEtiquetage->getComps(),3,true);
 	
 	// Parametrage de la sortie filtree
 	etiquetage.addFiltre(new Grayscale());
