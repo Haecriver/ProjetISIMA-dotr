@@ -16,7 +16,7 @@ Composante::Composante():
 	_height(0),
 	_width(0)
 	 {}
-	 
+	
 Composante::Composante(const Composante& cpy):
 		_height(cpy._height),
 		_width(cpy._width),
@@ -31,9 +31,9 @@ Composante::Composante(const Composante& cpy):
 	_points.assign(cpy._points.begin(), cpy._points.end());
 }
 	
-Composante::Composante(Mat& copy, Point pointCur): Composante(){
-	computeAComposante(copy, pointCur);
-	computeAtt();
+Composante::Composante(Mat& copy, Point pointCur, bool display_searching): Composante(){
+	computeAComposante(copy, pointCur, display_searching);
+	computeAtt();				
 }
 
 void Composante::addPoint(Point point){
@@ -91,7 +91,7 @@ void Composante::computeAtt(){
 	}
 }
 
-void Composante::computeAComposante(Mat& copy, Point pPointCur){
+void Composante::computeAComposante(Mat& copy, Point pPointCur, bool display_searching){
 	int posx, posy;
 	bool isValide;
 	std::stack<Point> pile;
@@ -102,14 +102,20 @@ void Composante::computeAComposante(Mat& copy, Point pPointCur){
 	while(!pile.empty()){
 		pointCur = pile.top();
 		pile.pop();
-	
+		
 		//Robustesse
-		if((pointCur.x>=0 && pointCur.x<copy.rows) &&
-			(pointCur.y>=0 && pointCur.y<copy.cols) &&
+		if ((pointCur.x>=0 && pointCur.x<copy.cols) &&
+			(pointCur.y>=0 && pointCur.y<copy.rows) &&
 			copy.ptr(pointCur.y)[pointCur.x] == MAX_BINARY_VALUE){
-					
+			
+			
 			addPoint(pointCur);				// On ajoute le point a la composante
 			copy.ptr(pointCur.y)[pointCur.x] = 0; 	// On passe le point a 0
+			
+			if(display_searching){
+				imshow("Searching blobs",copy);
+				waitKey(1);
+			}
 			
 			// On parcour le voisinage
 			for(int i=-1; i<=1; i++){
@@ -118,8 +124,8 @@ void Composante::computeAComposante(Mat& copy, Point pPointCur){
 					posy=pointCur.y + j;
 			
 					// Si le coordonnees sont valides et que le voisin est egal a 1
-					isValide = (posx>=0 && posx<copy.rows) &&
-					  (posy>=0 && posy<copy.cols) &&
+					isValide = (posx>=0 && posx<copy.cols) &&
+					  (posy>=0 && posy<copy.rows) &&
 					  (copy.ptr(posy)[posx] == MAX_BINARY_VALUE);
 					
 					if(isValide){
@@ -137,21 +143,25 @@ void Composante::computeAComposante(Mat& copy, Point pPointCur){
 	}
 }
 		
-std::vector<Composante> Composante::getComposantes(const Mat& src){
+std::vector<Composante> Composante::getComposantes(const Mat& src, bool display_searching){
 	Mat copy(src.clone()); // Copy de la ref courante
+	Mat detect;
 	std::vector<Composante> composantes;
 	
 	// Parcours de l'image
-	for(int j=0; j<copy.rows; j++){
-		for(int i=0; i<copy.cols; i++){	
+	for(int col=0; col<copy.cols; col++){	
+		for(int row=0; row<copy.rows; row++){
+			
 			// Si le pixel courant est elligible
-			if( copy.ptr(j)[i] == MAX_BINARY_VALUE){
+			if( copy.ptr(row)[col] == MAX_BINARY_VALUE){
 				// On creer un nouveau composant et on l'ajoute au vecteur resultat
-				composantes.push_back(Composante(copy, Point(i,j)));
+				Composante cur = Composante(copy, Point(col,row), display_searching);				
+				composantes.push_back(cur);
 			}
 		}
 	}
 
 	return composantes;
 }
+
 

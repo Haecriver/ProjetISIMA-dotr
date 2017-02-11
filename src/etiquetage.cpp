@@ -2,7 +2,8 @@
 #include <iostream>
 
 // Constructeur
-Etiquetage::Etiquetage()
+Etiquetage::Etiquetage( bool pDisplaySearching ):
+DISPLAY_SEARCHING(pDisplaySearching)
 {}
 
 // Setter/Getter
@@ -16,7 +17,7 @@ Mat Etiquetage::render(Mat& img){
 	Mat res(img.clone()), resc;
 
 	// Composante connexe
-    comps = Composante::getComposantes(res);
+    comps = Composante::getComposantes(res, DISPLAY_SEARCHING);
     
     // Passage en couleur RGB
     // (RGB ET POURTANT BGR ??)

@@ -10,11 +10,17 @@
 
 class Line{
 	private:
-		std::vector<LinePoint*> pts;			// Liste des points passant par cette droite
-		double a;								// Coefficient a de l'equation y = ax + b
-		double b;								// Biais de l'equation y = ax + b
+		std::vector<LinePoint> pts;				// Liste des points passant par cette droite
+		
+		long double a;							// Coefficient a de l'equation y = ax + b
+		long double b;							// Biais de l'equation y = ax + b
+		
+		Point pivot;
+		Point other;
+		
 		const unsigned NB_POINTS;				// Nombre de points contenus par droite
-		const static unsigned EPSILON = 2.0; 	// Marge erreur
+		const static unsigned EPSILON = 2.5; 	// Marge erreur
+		double ESPISLON_CROSS_RATIO = 0.04;
 		double crossRatio;						// Cross ratio de la droite
 		
 	public:
@@ -23,6 +29,7 @@ class Line{
 		Line(Point p1, Point p2);
 		
 		bool getIncludedPoints(vector<LinePoint>& allPoints);
+		bool getIncludedPointsPolar(vector<LinePoint>& allPoints);
 		
 		void computeCrossRatio();
 		
@@ -32,7 +39,7 @@ class Line{
 		
 		
 		// Setter/Getter
-		const std::vector<LinePoint*>& getPts() const{
+		const std::vector<LinePoint>& getPts() const{
 			return pts;
 		}
 };

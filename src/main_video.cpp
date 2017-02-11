@@ -15,7 +15,7 @@
 #include "dilatation.hpp"
 #include "etiquetage.hpp"
 #include "adathreshold.hpp"
-#include "detectShape.hpp"
+#include "detectLine.hpp"
 
 int main(int argc, const char* argv[] )
 {
@@ -26,7 +26,7 @@ int main(int argc, const char* argv[] )
 	if(argc >= 2){
 		path_video = std::string(argv[1]);
 	} else {
-		path_video = "./rsc/Scenario_2/in_";
+		path_video = "./rsc/Scenario_3_fluxFPGA/in_";
 	}
 	
 	//Chargements images
@@ -40,11 +40,9 @@ int main(int argc, const char* argv[] )
 	
 	// Parametrage de la sortie filtree
 	filtered.addFiltre(new Grayscale());
-	filtered.addFiltre(new Bthreshold(240)); // 148 res optimal
-	filtered.addFiltre(new Erosion(0,1));
-	filtered.addFiltre(new Dilatation(0,1));
+	filtered.addFiltre(new Bthreshold(240));
 	filtered.addFiltre(filtreEtiquetage);
-	filtered.addFiltre(new DetectShape(filtreEtiquetage->getComps(),5));
+	filtered.addFiltre(new DetectLine(filtreEtiquetage->getComps(),4));
 	
 	// Ajout des rendus a la fenetre
 	window.addDisplay(source);

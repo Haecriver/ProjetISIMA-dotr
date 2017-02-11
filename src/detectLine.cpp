@@ -20,8 +20,8 @@ Mat DetectLine::render(Mat& img){
 	
 	// On affiche les lignes graphiquement
 	for(Line el_line: lines){
-		line(res, el_line.getPts()[0]->getPos(), 
-			el_line.getPts()[3]->getPos(),
+		line(res, el_line.getPts()[0].getPos(), 
+			el_line.getPts()[3].getPos(),
 			Scalar(255, 255, 0), 3);
 	}
 	
@@ -32,7 +32,16 @@ void DetectLine::getLinesFromPoints(Mat& img){
 	bool searchingForLines = true, searchingForPoints = true;
 	Mat display, display_cur;
 	unsigned nb_iterations = 0;
-		
+	
+	std::vector<LinePoint> allPoints;				// Stockage de tous les points detectes
+	std::vector<LinePoint*> lonelyPoints;				// References temporaire des points detectes 
+													// (dont on ne connait pas encore les lignes)
+	std::vector<LinePoint*> wasntPivotPoints;			// References temporaire des points detectes
+													// (que l'on a pas encore utiliser comme pivot)
+	
+	// Nettoyage des vecteurs
+	lines.clear();
+
 	if(DISPLAY_SEARCHING){
 		display = img.clone();
 	}
@@ -42,20 +51,27 @@ void DetectLine::getLinesFromPoints(Mat& img){
 	allPoints = LinePoint::convertCompToLinePoint(comps);
 	for(unsigned i = 0; i < allPoints.size(); i++){
 		lonelyPoints.push_back(&allPoints[i]);
+		wasntPivotPoints.push_back(&allPoints[i]);
 	}
 	
 	// Tant que toutes les lignes n'ont pas ete trouvees
 	// Ou que le nombre d'iterations de l'algo a depasse le nb max
 	while(searchingForLines){
 		// On tire un point a partir duquel on cherche les lignes
-		LinePoint* pivot = *selectRandomPoint(lonelyPoints);
-		lonelyPoints.remove(pivot); // On supprime ce point des tirages possibles
+		LinePoint* pivot = *selectRandomPoint(wasntPivotPoints);
+		pivot->setWasPivot(true);	// On marque le point comme un pivot
+		
+		// On supprime ce point des tirages possibles
+		wasntPivotPoints.erase(std::remove(wasntPivotPoints.begin(), wasntPivotPoints.end(), pivot));
+		
 		searchingForPoints = true;
 		
 		while(searchingForPoints){
 			// On tire un point pour tirer une ligne
 			LinePoint* cur = *selectRandomPoint(lonelyPoints);
-			lonelyPoints.remove(cur); // On supprime ce point des tirages possibles
+			
+			// On supprime ce point des tirages possibles
+			lonelyPoints.erase(std::remove(lonelyPoints.begin(), lonelyPoints.end(), cur));
 			
 			// On tire la ligne
 			Line lineCur(pivot->getPos(), cur->getPos());
@@ -68,13 +84,13 @@ void DetectLine::getLinesFromPoints(Mat& img){
 					cur->getPos(),
 					Scalar(0, 255, 0), 1);
 				
-				imshow("Searching",display_cur);
-				waitKey(1000);
+				imshow("Searching lines",display_cur);
+				waitKey(500);
 				display_cur.release();
 			}
 			
 			// On test si la droite creee, passe par 4 points
-			if(lineCur.getIncludedPoints(allPoints)){
+			if(lineCur.getIncludedPointsPolar(allPoints)){
 				// Si oui
 				// On stock la ligne
 				lines.push_back(lineCur);
@@ -87,21 +103,16 @@ void DetectLine::getLinesFromPoints(Mat& img){
 				
 				// On l'affiche si demande
 				if(DISPLAY_SEARCHING){
-					line(display, lineCur.getPts()[0]->getPos(), 
-						lineCur.getPts()[3]->getPos(),
+					line(display, lineCur.getPts()[0].getPos(), 
+						lineCur.getPts()[3].getPos(),
 						Scalar(255, 255, 0), 1);
 				
-					imshow("Searching",display);
+					imshow("Searching lines",display);
 				}
 			}
 			
 			// Si on a teste tous les points disponibles
-			if(lonelyPoints.empty()){
-				// On affiche un message d'erreur (car ca ne devrait pas arriver si tous
-				// les points sont la)
-				std::cout << "Erreur: aucune ligne detectee pour le point " << 
-				"x:"<<pivot->getPos().x << " y:" << pivot->getPos().y << std::endl;
-				
+			if(lonelyPoints.empty()){	
 				// On increment le nombre d'iteration d'erreurs
 				nb_iterations++;
 				
@@ -112,23 +123,30 @@ void DetectLine::getLinesFromPoints(Mat& img){
 		
 		// On nettoie le vecteur de point a stocker dans des lignes
 		lonelyPoints.erase(lonelyPoints.begin(), lonelyPoints.end());
+		wasntPivotPoints.erase(wasntPivotPoints.begin(), wasntPivotPoints.end());
 		
 		// On met a jout le vecteur des points en n'incluant les points
-		// deja compris dans les lignes
+		// deja compris dans les lignes et le vecteur des points qui n'ont
+		// pas ete pivot
 		for(unsigned i = 0; i < allPoints.size(); i++){
 			if(!allPoints[i].isBelongsToLine()){
 				lonelyPoints.push_back(&allPoints[i]);
+				if(!allPoints[i].getWasPivot()){
+					wasntPivotPoints.push_back(&allPoints[i]);
+				}
 			}
 		}
 		
 		// Si le nombre de lignes est atteint ou si le nombre 
 		// d'iteration max a ete depasse, on stop l'algorithme
-		searchingForLines = lines.size() != NB_LINES && nb_iterations < NB_MAX_ITERATION;
+		searchingForLines = !wasntPivotPoints.empty() && lines.size() != NB_LINES && nb_iterations < NB_MAX_ITERATION;
+		if (nb_iterations >= NB_MAX_ITERATION) std::cout << "Itemax atteint" << std::endl;
+		if (wasntPivotPoints.empty()) std::cout << "Tous points parcourus" << std::endl;
 	}
 }
 
-std::list<LinePoint*>::iterator DetectLine::selectRandomPoint(std::list<LinePoint*> pts) {
-	std::list<LinePoint*>::iterator begin = pts.begin();
+std::vector<LinePoint*>::iterator DetectLine::selectRandomPoint(std::vector<LinePoint*> pts) {
+	std::vector<LinePoint*>::iterator begin = pts.begin();
     std::uniform_int_distribution<> dis(0, std::distance(pts.begin(), pts.end()) - 1);
     std::advance(begin, dis(gen));
     return begin;

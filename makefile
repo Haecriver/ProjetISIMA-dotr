@@ -42,7 +42,7 @@ EXEC = $(patsubst %,$(EXEDIR)/%,$(_EXEC))
 ### Fichiers communs a tous les executables ###
 _OBJ_COM = window display composante filtre bthreshold dilatation \
 			erosion grayscale etiquetage adathreshold detectShape \
-			detectedBlob
+			detectedBlob linePoint line detectLine
 			
 OBJ_COM = $(patsubst %,$(OBJDIR)/%.o,$(_OBJ_COM))
 
@@ -54,7 +54,7 @@ OBJ_VID = $(patsubst %,$(OBJDIR)/%.o,$(_OBJ_VID))
 _OBJ_STA = main_stats
 OBJ_STA = $(patsubst %,$(OBJDIR)/%.o,$(_OBJ_STA))
 
-_OBJ_LINE = main_line linePoint line detectLine
+_OBJ_LINE = main_line
 OBJ_LINE = $(patsubst %,$(OBJDIR)/%.o,$(_OBJ_LINE))
 
 ### Listes des fichiers objets ###

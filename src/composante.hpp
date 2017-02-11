@@ -49,7 +49,7 @@ class Composante{
 		 *  \param copy : Reference de la copie d'image, dont les pixels vont etre passe a 0 une fois traite
 		 *  \param pointCur : Point courant a traiter
 		 */
-		void computeAComposante(Mat& copy, Point pointCur);
+		void computeAComposante(Mat& copy, Point pointCur, bool display_searching);
 		
 	public:
 	
@@ -69,7 +69,7 @@ class Composante{
 		 *  \param copy : Reference de la copie d'image, dont les pixels vont etre passe a 0 une fois traite
 		 *  \param pointCur : Point courant a traiter
 		 */
-		Composante(Mat& copy, Point pointCur);
+		Composante(Mat& copy, Point pointCur, bool display_searching);
 		
 		Composante(const Composante& cpy);
 		
@@ -83,7 +83,7 @@ class Composante{
 		 *  \param src : Reference constante vers l'image a traiter.
 		 *  \return Le vecteur de composantes connexes de l'image.
 		 */
-		static std::vector<Composante> getComposantes(const Mat& src);
+		static std::vector<Composante> getComposantes(const Mat& src, bool display_searching);
 			
 		/*!
 		 *  \brief Ajout de point

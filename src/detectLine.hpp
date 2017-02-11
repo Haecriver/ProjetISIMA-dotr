@@ -15,9 +15,10 @@ class DetectLine : public Filtre{
 		const bool DISPLAY_SEARCHING;					// Affichage de la recherche de ligne
 		const static unsigned NB_MAX_ITERATION = 10;	// Nombre max d'iterations en erreur toleree
 		
-		std::vector<LinePoint> allPoints;				// Stockage de tous les points detectes
-		std::list<LinePoint*> lonelyPoints;				// References temporaire des points detectes
 		std::vector<Line> lines;						// Stockage des lignes detectees
+		
+		static std::vector<LinePoint*>::iterator selectRandomPoint(std::vector<LinePoint*> pts);
+		void getLinesFromPoints(Mat& img);
 	
 	public:
 		// Contructeurs
@@ -26,8 +27,8 @@ class DetectLine : public Filtre{
 		
 		// Methodes
 		Mat render(Mat& img);
-		void getLinesFromPoints(Mat& img);
-		static std::list<LinePoint*>::iterator selectRandomPoint(std::list<LinePoint*> pts);
+		
+
 };
 
 

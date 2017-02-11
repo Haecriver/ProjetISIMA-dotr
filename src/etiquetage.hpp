@@ -10,10 +10,11 @@
 class Etiquetage : public Filtre {
 	private:		
 		std::vector<Composante> comps;
+		const bool DISPLAY_SEARCHING;					// Affichage de la recherche de ligne
 	
 	public :
 		// Contructeurs
-		Etiquetage();
+		Etiquetage( bool pDisplaySearching = false);
 		virtual ~Etiquetage(){}
 		
 		// Setter/Getter
