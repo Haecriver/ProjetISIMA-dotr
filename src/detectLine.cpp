@@ -186,6 +186,15 @@ void DetectLine::getLinesFromPoints(Mat& img){
 	}
 }
 
+bool equalLine (Line& l1, Line& l2) {
+	bool res = l1.getPts().size() == l2.getPts().size();
+	for(unsigned i = 0; i < l1.getPts().size(); i++){
+		res = res && (l1.getPts()[i].getPos().x == l2.getPts()[i].getPos().x 
+			&& l1.getPts()[i].getPos().y == l2.getPts()[i].getPos().y);
+	}
+  	return res;
+}
+
 void DetectLine::getLinesFromPoints2(Mat& img){
 	bool searchingForLines = true, searchingForPoints = true;
 	Mat display, display_cur;
@@ -214,7 +223,7 @@ void DetectLine::getLinesFromPoints2(Mat& img){
 	// Ou que le nombre d'iterations de l'algo a depasse le nb max
 	while(searchingForLines){
 		// ini index j
-		j=0;
+		j=i+1;
 		
 		// On tire un point a partir duquel on cherche les lignes
 		LinePoint pivot = allPoints[i];
@@ -245,35 +254,72 @@ void DetectLine::getLinesFromPoints2(Mat& img){
 			
 			// On test si la droite creee, passe par 4 points
 			if(lineCur.getIncludedPointsPolar(allPoints,false)){
-			
-				// On verifie le cross ratio de la ligne
-				double crossRatio;
-				bool crValid = false;
+				std::vector<Line> linesCur;
 				
-				for(unsigned i=0; i<axes.size() && !crValid; i++){
-					Axe axe = axes[i];
-					if(lineCur.sameCrossRatio(axe.crossRatio)){
-						crossRatio = axe.crossRatio;
-						crValid = true;
+				// display line
+				/*std::cout << "line CUR :(";
+				for(LinePoint lp : lineCur.getPts()){
+					std::cout << lp.getPos().x << "," << lp.getPos().y <<"),(";
+				}
+				std::cout << std::endl;*/
+				
+				if(lineCur.getPts().size() >= 4){
+					// On separe la ligne en plusieur ligne de 4
+					for(unsigned i=0; i < lineCur.getPts().size() - 3; i++){
+						std::vector<LinePoint> newPts;
+						for(unsigned j=i; j < 4 + i; j++){
+							newPts.push_back(LinePoint(lineCur.getPts()[j]));
+						}
+						
+						Line newLine(lineCur);
+						newLine.setPts(newPts);
+						newLine.computeCrossRatio();
+						linesCur.push_back(newLine);
 					}
+					
+					/*std::cout << "sublines size " << linesCur.size() << std::endl;
+					
+					for (Line sb : linesCur){
+						std::cout << "subline :(";
+						for(LinePoint lp : sb.getPts()){
+							std::cout << lp.getPos().x << "," << lp.getPos().y <<"),(";
+						}
+						std::cout << std::endl;
+					}*/
 				}
 				
-				if(crValid){
-					// Si oui
-					// On stock la ligne
-					savedLines[crossRatio].push_back(lineCur);
+				for(Line lineCur2: linesCur){
+			
+					// On verifie le cross ratio de la ligne
+					double crossRatio;
+					bool crValid = false;
 				
-					// On stop la boucle
-					searchingForPoints = false;
-				
-					// On l'affiche si demande
-					if(DISPLAY_SEARCHING){
-						line(display, lineCur.getPts()[0].getPos(), 
-							lineCur.getPts()[3].getPos(),
-							Scalar(0, 255, 255), 1);
-				
-						imshow("Searching lines",display);
+					for(unsigned i=0; i<axes.size() && !crValid; i++){
+						Axe axe = axes[i];
+						if(lineCur2.sameCrossRatio(axe.crossRatio)){
+							crossRatio = axe.crossRatio;
+							crValid = true;
+						}
 					}
+				
+					if(crValid){
+						// Si oui
+						// On stock la ligne
+						savedLines[crossRatio].push_back(lineCur2);
+				
+						// On stop la boucle
+						searchingForPoints = false;
+				
+						// On l'affiche si demande
+						if(DISPLAY_SEARCHING){
+							line(display, lineCur2.getPts()[0].getPos(), 
+								lineCur2.getPts()[3].getPos(),
+								Scalar(0, 255, 255), 1);
+				
+							imshow("Searching lines",display);
+						}
+					}
+				
 				}
 			}
 
@@ -293,6 +339,14 @@ void DetectLine::getLinesFromPoints2(Mat& img){
 	}
 	
 	// On fait un trie sur les ligne recuperee
+	// On nettoie les maps
+	for (Axe axe : axes){
+		std::vector<Line> linesToSort = savedLines[axe.crossRatio];
+		// On supprime les droites qui ont les meme points
+		auto it = std::unique (linesToSort.begin(), linesToSort.end(), equalLine);
+ 		linesToSort.resize( std::distance(linesToSort.begin(),it) ); // 10 20 30 20 10
+		std::cout << "for cr:" << axe.crossRatio << " we have " << linesToSort.size() << " possibilities" << std::endl;
+	}
 	
 }
 

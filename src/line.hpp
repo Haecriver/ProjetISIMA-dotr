@@ -14,18 +14,20 @@ class Line{
 		
 		long double a;							// Coefficient a de l'equation y = ax + b
 		long double b;							// Biais de l'equation y = ax + b
+		long double theta;
 		
 		Point pivot;
 		Point other;
 		
-		const unsigned NB_POINTS;				// Nombre de points contenus par droite
-		const static unsigned EPSILON = 2.5; 	// Marge erreur
+		const static unsigned NB_POINTS = 4;				// Nombre de points contenus par droite
+		constexpr static double EPSILON = 2.5; 	// Marge erreur
 		constexpr static double ESPISLON_CROSS_RATIO = 0.1;
 		double crossRatio;						// Cross ratio de la droite
 		
 	public:
 		// Contructeurs
-		Line(double pA, double pB, unsigned pNbPoints = 4);
+		Line();
+		Line(double pA, double pB);
 		Line(Point p1, Point p2);
 		
 		bool getIncludedPoints(vector<LinePoint>& allPoints, bool careBelongsToLine=true);
@@ -46,6 +48,14 @@ class Line{
 		// Setter/Getter
 		const std::vector<LinePoint>& getPts() const{
 			return pts;
+		}
+		
+		// Setter/Getter
+		void setPts(std::vector<LinePoint> ppts){
+			pts.clear();
+			for(unsigned i=0; i<ppts.size() ; i++){
+				pts.push_back(LinePoint(ppts[i]));
+			}	
 		}
 };
 

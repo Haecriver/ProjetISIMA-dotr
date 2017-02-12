@@ -1,12 +1,13 @@
 #include "line.hpp"
 
-Line::Line(double pA, double pB, unsigned pNbPoints):
-a(pA),b(pB),
-NB_POINTS(pNbPoints)
+Line::Line():Line(0.0,0.0){}
+
+Line::Line(double pA, double pB):
+a(pA),b(pB)
 {}
 
 
-Line::Line(Point p1, Point p2) : Line(0.0,0.0) {
+Line::Line(Point p1, Point p2) : Line() {
 	pivot = Point(p1.x,p1.y);
 	other = Point(p2.x,p2.y);
 	Point pi,pj;
@@ -29,6 +30,9 @@ Line::Line(Point p1, Point p2) : Line(0.0,0.0) {
 		a = 0;
 		b = 0;
 	}
+	
+	// On cacul le theta du point qui fait la ligne
+	theta = atan(((double)other.y-(double)pivot.y)/((double)other.x-(double)pivot.x)) * 180 / M_PI;
 }
 
 bool Line::getIncludedPoints(vector<LinePoint>& allPoints, bool careBelongsToLine){
@@ -82,9 +86,6 @@ bool Line::getIncludedPointsPolar(vector<LinePoint>& allPoints, bool careBelongs
  	
  	// on va retirer pivot.x, pivot.y aux autres points 
 	// pour deplacer le repere sur ce point
-
-	// On cacul le theta du point qui fait la ligne
-	theta_line = atan(((double)other.y-(double)pivot.y)/((double)other.x-(double)pivot.x)) * 180 / M_PI;
 		
 	for(unsigned i = 0; i<allPoints.size(); i++){
 		LinePoint pt = allPoints[i];
@@ -100,7 +101,7 @@ bool Line::getIncludedPointsPolar(vector<LinePoint>& allPoints, bool careBelongs
 			// On verifie que le point estimee correspond avec le vrai point y
 		 	// Si c'est le cas alors le point est sur la droite
 			if(!(pt.isBelongsToLine() && careBelongsToLine) &&
-				theta_cur  > theta_line - EPSILON && theta_cur < theta_line + EPSILON){
+				theta_cur  > theta - EPSILON && theta_cur < theta + EPSILON){
 				// Considere comme valide
 				ref_pts.push_back(&allPoints[i]);
 			}
@@ -108,7 +109,7 @@ bool Line::getIncludedPointsPolar(vector<LinePoint>& allPoints, bool careBelongs
 	}
 	
 	// Si on a le bon nombre de points
-	if(ref_pts.size() == NB_POINTS){	
+	if((careBelongsToLine && ref_pts.size() == NB_POINTS) || (!careBelongsToLine && ref_pts.size() >= NB_POINTS)){	
 		
 		// On les trie
 		sort(ref_pts.begin(), ref_pts.end(), 
@@ -122,14 +123,14 @@ bool Line::getIncludedPointsPolar(vector<LinePoint>& allPoints, bool careBelongs
 		for (LinePoint* pt : ref_pts){
 			if(careBelongsToLine){
 				pt->setBelongsToLine(true);
-			} else {
-				pt->incNbLines();
 			}
 			pts.push_back(LinePoint(*pt));
 		}
 
 		// On calcul le crossRatio
-		computeCrossRatio();
+		if(ref_pts.size() == NB_POINTS){
+			computeCrossRatio();
+		}
 		res = true;
 		
 	}
