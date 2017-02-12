@@ -42,7 +42,7 @@ EXEC = $(patsubst %,$(EXEDIR)/%,$(_EXEC))
 ### Fichiers communs a tous les executables ###
 _OBJ_COM = window display composante filtre bthreshold dilatation \
 			erosion grayscale etiquetage adathreshold detectShape \
-			detectedBlob linePoint line detectLine
+			detectedBlob linePoint line detectLine axe
 			
 OBJ_COM = $(patsubst %,$(OBJDIR)/%.o,$(_OBJ_COM))
 
