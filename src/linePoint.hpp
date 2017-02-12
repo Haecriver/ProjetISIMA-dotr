@@ -12,6 +12,7 @@ class LinePoint {
 		Point pos;						// Position du point
 		bool belongsToLine = false;		// true si le point appartient a une ligne
 		bool wasPivot = false;			// true si le point a ete utilise en tant que pivot
+		unsigned nbLines = 0;
 		
 	public:
 		LinePoint();
@@ -37,6 +38,14 @@ class LinePoint {
 		
 		void setWasPivot(bool val){
 			wasPivot = val;
+		}
+		
+		unsigned getNbLines() const{
+			return nbLines;
+		}
+		
+		void incNbLines(){
+			nbLines ++;
 		}
 		
 		double getDistance(const LinePoint& pt) const{

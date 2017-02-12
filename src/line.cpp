@@ -31,23 +31,17 @@ Line::Line(Point p1, Point p2) : Line(0.0,0.0) {
 	}
 }
 
-bool Line::getIncludedPoints(vector<LinePoint>& allPoints){
+bool Line::getIncludedPoints(vector<LinePoint>& allPoints, bool careBelongsToLine){
 	double estimatedY;
 	bool res = false;
  	vector<LinePoint*> ref_pts;
 	for(unsigned i = 0; i<allPoints.size(); i++){
 		LinePoint pt = allPoints[i];
 	 	estimatedY = a*(double)pt.getPos().x + b;	// Calcul du y avec l'equation de la droite
-	 	
-	 	/*std::cout << "a :" << a << std::endl;
-	 	std::cout << "b :" << b << std::endl;
-	 	std::cout << "x :" << pt.getPos().x << std::endl;
-	 	std::cout << "y :" << pt.getPos().y << std::endl;
-	 	std::cout << "estimatedY :" << estimatedY << std::endl;*/
-	 	
+
 	 	// On verifie que le point estimee correspond avec le vrai point y
 	 	// Si c'est le cas alors le point est sur la droite
-		if(!pt.isBelongsToLine() &&
+		if(!(pt.isBelongsToLine() && careBelongsToLine) &&
 			estimatedY  > pt.getPos().y - EPSILON && estimatedY < pt.getPos().y + EPSILON){
 			// Considere comme valide
 			ref_pts.push_back(&allPoints[i]);
@@ -67,7 +61,11 @@ bool Line::getIncludedPoints(vector<LinePoint>& allPoints){
 		
 		// On associe les points a la droite
 		for (LinePoint* pt : ref_pts){
-			pt->setBelongsToLine(true);
+			if(careBelongsToLine){
+				pt->setBelongsToLine(true);
+			} else {
+				pt->incNbLines();
+			}
 			pts.push_back(LinePoint(*pt));
 		}
 		
@@ -77,7 +75,7 @@ bool Line::getIncludedPoints(vector<LinePoint>& allPoints){
 	return res;
 }
 
-bool Line::getIncludedPointsPolar(vector<LinePoint>& allPoints){
+bool Line::getIncludedPointsPolar(vector<LinePoint>& allPoints, bool careBelongsToLine){
 	bool res = false;
 	double theta_line, theta_cur;
  	vector<LinePoint*> ref_pts;
@@ -99,12 +97,9 @@ bool Line::getIncludedPointsPolar(vector<LinePoint>& allPoints){
 			// On cacul le theta d'un autre point
 			theta_cur = atan(((double)pt.getPos().y-(double)pivot.y)/((double)pt.getPos().x-(double)pivot.x)) * 180 / M_PI;
 		
-			/*std::cout << "theta :" << theta_line << std::endl;
-		 	std::cout << "theta cur :" << theta_cur << std::endl;*/
-		 	
 			// On verifie que le point estimee correspond avec le vrai point y
 		 	// Si c'est le cas alors le point est sur la droite
-			if(!pt.isBelongsToLine() &&
+			if(!(pt.isBelongsToLine() && careBelongsToLine) &&
 				theta_cur  > theta_line - EPSILON && theta_cur < theta_line + EPSILON){
 				// Considere comme valide
 				ref_pts.push_back(&allPoints[i]);
@@ -113,7 +108,7 @@ bool Line::getIncludedPointsPolar(vector<LinePoint>& allPoints){
 	}
 	
 	// Si on a le bon nombre de points
-	if(ref_pts.size() == NB_POINTS){		
+	if(ref_pts.size() == NB_POINTS){	
 		
 		// On les trie
 		sort(ref_pts.begin(), ref_pts.end(), 
@@ -125,13 +120,16 @@ bool Line::getIncludedPointsPolar(vector<LinePoint>& allPoints){
 
 		// On associe les points a la droite
 		for (LinePoint* pt : ref_pts){
-			pt->setBelongsToLine(true);
+			if(careBelongsToLine){
+				pt->setBelongsToLine(true);
+			} else {
+				pt->incNbLines();
+			}
 			pts.push_back(LinePoint(*pt));
 		}
 
 		// On calcul le crossRatio
 		computeCrossRatio();
-		
 		res = true;
 		
 	}

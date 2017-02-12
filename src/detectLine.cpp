@@ -21,11 +21,10 @@ Mat DetectLine::render(Mat& img){
 	double fontScale = 1;
 	int thickness = 1;
 	string str;
-
 	
 	// On calcul les lignes depuis le vecteur de composants
 	// donne au constructeur
-	getLinesFromPoints(res);
+	getLinesFromPoints2(res);
 	
 	// On affiche les lignes graphiquement
 	for(Line el_line: lines){
@@ -185,6 +184,116 @@ void DetectLine::getLinesFromPoints(Mat& img){
 		if (nb_iterations >= NB_MAX_ITERATION) std::cout << "Itemax atteint" << std::endl;
 		if (wasntPivotPoints.empty()) std::cout << "Tous points parcourus" << std::endl;
 	}
+}
+
+void DetectLine::getLinesFromPoints2(Mat& img){
+	bool searchingForLines = true, searchingForPoints = true;
+	Mat display, display_cur;
+	unsigned i=0, j=0;
+	std::map<double, std::vector<Line> > savedLines;	// Map contenant les lignes detectees aux cross ratios associees
+	
+	// On initialise la map
+	for (Axe axe : axes){
+		savedLines[axe.crossRatio] = std::vector<Line>();
+	}
+	
+	std::vector<LinePoint> allPoints;				// Stockage de tous les points detectes
+	
+	// Nettoyage des vecteurs
+	lines.clear();
+
+	if(DISPLAY_SEARCHING){
+		display = img.clone();
+	}
+	
+	// On initialise les vecteurs de points qui vont etre utilises
+	// a partir du vecteur de composant passe au constructeur
+	allPoints = LinePoint::convertCompToLinePoint(comps);
+	
+	// Tant que toutes les lignes n'ont pas ete trouvees
+	// Ou que le nombre d'iterations de l'algo a depasse le nb max
+	while(searchingForLines){
+		// ini index j
+		j=0;
+		
+		// On tire un point a partir duquel on cherche les lignes
+		LinePoint pivot = allPoints[i];
+		
+		searchingForPoints = true;
+		
+		while(searchingForPoints){
+			// On tire un point pour tirer une ligne
+			if(j == i) j++;
+			
+			LinePoint cur = allPoints[j];
+
+			// On tire la ligne
+			Line lineCur(pivot.getPos(), cur.getPos());
+			
+			// On l'affiche si demande
+			if(DISPLAY_SEARCHING){
+				display_cur = display.clone();
+				
+				line(display_cur, pivot.getPos(), 
+					cur.getPos(),
+					Scalar(0, 255, 0), 1);
+				
+				imshow("Searching lines",display_cur);
+				waitKey(100);
+				display_cur.release();
+			}
+			
+			// On test si la droite creee, passe par 4 points
+			if(lineCur.getIncludedPointsPolar(allPoints,false)){
+			
+				// On verifie le cross ratio de la ligne
+				double crossRatio;
+				bool crValid = false;
+				
+				for(unsigned i=0; i<axes.size() && !crValid; i++){
+					Axe axe = axes[i];
+					if(lineCur.sameCrossRatio(axe.crossRatio)){
+						crossRatio = axe.crossRatio;
+						crValid = true;
+					}
+				}
+				
+				if(crValid){
+					// Si oui
+					// On stock la ligne
+					savedLines[crossRatio].push_back(lineCur);
+				
+					// On stop la boucle
+					searchingForPoints = false;
+				
+					// On l'affiche si demande
+					if(DISPLAY_SEARCHING){
+						line(display, lineCur.getPts()[0].getPos(), 
+							lineCur.getPts()[3].getPos(),
+							Scalar(0, 255, 255), 1);
+				
+						imshow("Searching lines",display);
+					}
+				}
+			}
+
+			// On stop la boucle
+			searchingForPoints = j<allPoints.size();
+
+			//inc
+			j++;
+		}
+
+		// inc
+		i++;
+		
+		// Si le nombre de lignes est atteint ou si le nombre 
+		// d'iteration max a ete depasse, on stop l'algorithme
+		searchingForLines = i<allPoints.size();
+	}
+	
+	// On fait un trie sur les ligne recuperee
+	
 }
 
 std::vector<LinePoint*>::iterator DetectLine::selectRandomPoint(std::vector<LinePoint*> pts) {

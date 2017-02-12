@@ -5,6 +5,7 @@
 #include <list>
 #include <random>
 #include <string>
+#include <map>
 
 #include "filtre.hpp"
 #include "line.hpp"
@@ -26,6 +27,7 @@ class DetectLine : public Filtre{
 		
 		static std::vector<LinePoint*>::iterator selectRandomPoint(std::vector<LinePoint*> pts);
 		void getLinesFromPoints(Mat& img);
+		void getLinesFromPoints2(Mat& img);
 	
 	public:
 		// Contructeurs
