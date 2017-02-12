@@ -76,3 +76,37 @@ void Axe::read(const FileNode& node)                          //Read serializati
 	point4Z= (double)node["point4Z"];
 	point4CR= (double)node["point4CR"];
 }
+
+std::vector<Axe> Axe::getAxes(const std::string filename){
+	FileStorage fs;
+	std::vector<Axe> res;
+	fs.open(filename, FileStorage::READ);
+	if (!fs.isOpened())
+	{
+		std::cerr << "Failed to open " << filename << std::endl;
+	}else{
+		Axe axeX,axeY,axeZ;
+		fs["axeX"] >> axeX;
+		fs["axeY"] >> axeY;
+		fs["axeZ"] >> axeZ;
+
+		res.push_back(axeX);
+		res.push_back(axeY);
+		res.push_back(axeZ);
+	}
+	return res;
+
+}
+
+void write(FileStorage& fs, const std::string&, const Axe& x)
+{
+	x.write(fs);
+}
+
+void read(const FileNode& node, Axe& x, const Axe& default_value)
+{
+	if(node.empty())
+		x = default_value;
+	else
+		x.read(node);
+}

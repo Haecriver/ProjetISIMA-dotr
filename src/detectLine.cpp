@@ -4,7 +4,9 @@ std::random_device rd;
 std::mt19937 gen(rd());
 
 // Contructeurs
-DetectLine::DetectLine(const std::vector<Composante>& pcomps, unsigned pNbLines, bool pDisplaySearching):
+DetectLine::DetectLine(const std::vector<Axe>& pAxes, const std::vector<Composante>& pcomps,
+	unsigned pNbLines, bool pDisplaySearching):
+axes(pAxes),
 comps(pcomps),
 NB_LINES(pNbLines),
 DISPLAY_SEARCHING(pDisplaySearching)
@@ -14,15 +16,43 @@ DISPLAY_SEARCHING(pDisplaySearching)
 Mat DetectLine::render(Mat& img){
 	Mat res(img.clone());
 	
+	Scalar color;
+	int fontFace = CV_FONT_HERSHEY_COMPLEX_SMALL;
+	double fontScale = 1;
+	int thickness = 1;
+	string str;
+
+	
 	// On calcul les lignes depuis le vecteur de composants
 	// donne au constructeur
 	getLinesFromPoints(res);
 	
 	// On affiche les lignes graphiquement
 	for(Line el_line: lines){
+
+		if(el_line.sameCrossRatio(axes[0].crossRatio)){
+			// X
+			str = "Axe X";
+			color = Scalar(255, 0, 0);
+		}else if (el_line.sameCrossRatio(axes[1].crossRatio)){
+			// Y
+			str = "Axe Y";
+			color = Scalar(0, 255, 0);
+		}else if (el_line.sameCrossRatio(axes[2].crossRatio)){
+			// Z
+			str = "Axe Z";
+			color = Scalar(0, 0, 255);
+		} else {
+			str = "ERREUR";
+			color = Scalar(255, 0, 255);
+		}
+		
+		
 		line(res, el_line.getPts()[0].getPos(), 
 			el_line.getPts()[3].getPos(),
-			Scalar(255, 255, 0), 3);
+			color, 3);
+		putText(res, str, el_line.getPts()[0].getPos(), fontFace, fontScale,
+			color, thickness);
 	}
 	
 	return res;
@@ -91,23 +121,35 @@ void DetectLine::getLinesFromPoints(Mat& img){
 			
 			// On test si la droite creee, passe par 4 points
 			if(lineCur.getIncludedPointsPolar(allPoints)){
-				// Si oui
-				// On stock la ligne
-				lines.push_back(lineCur);
+			
+				// On verifie le cross ratio de la ligne
+				bool crValid = false;
 				
-				// On reinitialise le nombre d'iteration
-				nb_iterations = 0;
+				for(Axe axe : axes){
+					crValid = crValid 
+						|| lineCur.sameCrossRatio(axe.crossRatio);
+				}
 				
-				// On stop la boucle
-				searchingForPoints = false;
 				
-				// On l'affiche si demande
-				if(DISPLAY_SEARCHING){
-					line(display, lineCur.getPts()[0].getPos(), 
-						lineCur.getPts()[3].getPos(),
-						Scalar(255, 255, 0), 1);
+				if(crValid){
+					// Si oui
+					// On stock la ligne
+					lines.push_back(lineCur);
 				
-					imshow("Searching lines",display);
+					// On reinitialise le nombre d'iteration
+					nb_iterations = 0;
+				
+					// On stop la boucle
+					searchingForPoints = false;
+				
+					// On l'affiche si demande
+					if(DISPLAY_SEARCHING){
+						line(display, lineCur.getPts()[0].getPos(), 
+							lineCur.getPts()[3].getPos(),
+							Scalar(255, 255, 0), 1);
+				
+						imshow("Searching lines",display);
+					}
 				}
 			}
 			

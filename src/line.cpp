@@ -132,12 +132,7 @@ bool Line::getIncludedPointsPolar(vector<LinePoint>& allPoints){
 		// On calcul le crossRatio
 		computeCrossRatio();
 		
-		// Comparer avec la ligne qui avait le meme cross ratio, et ne pas l'accepter si ça fait nimporte quoi
-		// (Compter le nombre de fois ou la ligne est constester)
-		
-		res = (crossRatio >  1.666 - ESPISLON_CROSS_RATIO && crossRatio <  1.666 + ESPISLON_CROSS_RATIO)||
-			(crossRatio >  1.111 - ESPISLON_CROSS_RATIO && crossRatio <  1.111 + ESPISLON_CROSS_RATIO) ||
-			(crossRatio >  2.0 - ESPISLON_CROSS_RATIO && crossRatio <  2.0 + ESPISLON_CROSS_RATIO);
+		res = true;
 		
 	}
 	return res;

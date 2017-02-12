@@ -4,6 +4,7 @@
 #include <opencv2/core/core.hpp>
 #include <iostream>
 #include <string>
+#include <vector>
 
 using namespace cv;
 
@@ -35,20 +36,12 @@ struct Axe {
 	void write(FileStorage& fs) const;
 	
 	void read(const FileNode& node);
+	
+	static std::vector<Axe> getAxes(const std::string filename);
 
 };
 
-void write(FileStorage& fs, const std::string&, const Axe& x)
-{
-	x.write(fs);
-}
-
-void read(const FileNode& node, Axe& x, const Axe& default_value = Axe())
-{
-	if(node.empty())
-		x = default_value;
-	else
-		x.read(node);
-}
+void write(FileStorage& fs, const std::string&, const Axe& x);
+void read(const FileNode& node, Axe& x, const Axe& default_value = Axe());
 
 #endif
