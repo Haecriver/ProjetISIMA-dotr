@@ -70,7 +70,7 @@ bool Line::getIncludedPoints(vector<LinePoint>& allPoints, bool careBelongsToLin
 			} else {
 				pt->incNbLines();
 			}
-			pts.push_back(LinePoint(*pt));
+			pts.push_back(pt);
 		}
 		
 		// On calcul le crossRatio
@@ -79,9 +79,9 @@ bool Line::getIncludedPoints(vector<LinePoint>& allPoints, bool careBelongsToLin
 	return res;
 }
 
-bool Line::getIncludedPointsPolar(vector<LinePoint>& allPoints, bool careBelongsToLine){
+bool Line::getIncludedPointsPolar(vector<LinePoint>& allPoints){
 	bool res = false;
-	double theta_line, theta_cur;
+	double theta_cur;
  	vector<LinePoint*> ref_pts;
  	
  	// on va retirer pivot.x, pivot.y aux autres points 
@@ -93,6 +93,7 @@ bool Line::getIncludedPointsPolar(vector<LinePoint>& allPoints, bool careBelongs
 		// Cas ou on tombe sur le pivot
 		if(pt.getPos().y == pivot.y && pt.getPos().x == pivot.x){
 			// On le rajoute
+			allPoints[i].setModuleCur(0.0);
 			ref_pts.push_back(&allPoints[i]);
 		} else {
 			// On cacul le theta d'un autre point
@@ -100,31 +101,53 @@ bool Line::getIncludedPointsPolar(vector<LinePoint>& allPoints, bool careBelongs
 		
 			// On verifie que le point estimee correspond avec le vrai point y
 		 	// Si c'est le cas alors le point est sur la droite
-			if(!(pt.isBelongsToLine() && careBelongsToLine) &&
+			if((!pt.isBelongsToLine() || pt.isExtremite()) &&
 				theta_cur  > theta - EPSILON && theta_cur < theta + EPSILON){
 				// Considere comme valide
+				allPoints[i].setModuleCur(
+					(pt.getPos().y-pivot.y)*(pt.getPos().y-pivot.y) + 
+					(pt.getPos().x-pivot.x)*(pt.getPos().x-pivot.x));
+				
 				ref_pts.push_back(&allPoints[i]);
 			}
 		}
 	}
 	
 	// Si on a le bon nombre de points
-	if((careBelongsToLine && ref_pts.size() == NB_POINTS) || (!careBelongsToLine && ref_pts.size() >= NB_POINTS)){	
+	if(ref_pts.size() == NB_POINTS){
+	
+		// On calcul les modules
 		
-		// On les trie
+		
+		// On les trie en fonction de leur module par rapport au pivot
 		sort(ref_pts.begin(), ref_pts.end(), 
 			[](LinePoint* a, LinePoint* b) -> bool
 			{ 
-				return a->getPos().x > b->getPos().x; 
+				return a->getModuleCur() > b->getModuleCur(); 
+				//return a->getPos().x > b->getPos().x; 
 			}
 		);
 
+		// Maintenant le 1er points est une extremite
+		LinePoint extremite = LinePoint(*ref_pts[0]);
+		
+		// On les en fonction de leur distance par rapport au 1er point
+		sort(ref_pts.begin(), ref_pts.end(), 
+			[&, extremite](LinePoint* a, LinePoint* b) -> bool
+			{ 
+				return a->getDistance(extremite) > b->getDistance(extremite); 
+			}
+		);
+	
+		// On notifie les extremites
+		ref_pts[0]->setExtremite(true);
+		ref_pts[NB_POINTS-1]->setExtremite(true);
+
 		// On associe les points a la droite
 		for (LinePoint* pt : ref_pts){
-			if(careBelongsToLine){
-				pt->setBelongsToLine(true);
-			}
-			pts.push_back(LinePoint(*pt));
+			pt->setBelongsToLine(true);
+			pt->incNbLines();
+			pts.push_back(pt);
 		}
 
 		// On calcul le crossRatio
@@ -139,8 +162,8 @@ bool Line::getIncludedPointsPolar(vector<LinePoint>& allPoints, bool careBelongs
 
 void Line::computeCrossRatio(){
 	if(pts.size() == 4){
-		crossRatio = (pts[0].getDistance(pts[2]) * pts[1].getDistance(pts[3])) / 
-		(pts[1].getDistance(pts[2]) * pts[0].getDistance(pts[3]));
+		crossRatio = (pts[0]->getDistance(*pts[2]) * pts[1]->getDistance(*pts[3])) / 
+		(pts[1]->getDistance(*pts[2]) * pts[0]->getDistance(*pts[3]));
 	}else{
 		std::cout << "Nb pts incorrect" << std::endl;
 	}

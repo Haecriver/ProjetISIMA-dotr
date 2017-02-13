@@ -24,7 +24,7 @@ int main(int argc, const char* argv[] )
 		path_video = std::string(argv[1]);
 	} else {
 		//path_video = "./rsc/artificial_images/apparaillement_test_";
-		path_video = "./rsc/Scenario_3_fluxFPGA/in_";
+		path_video = "./rsc/Scenario_4_fluxFPGA/in_";
 	}
 	
 	// Chargement du modele

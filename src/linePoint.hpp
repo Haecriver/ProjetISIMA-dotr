@@ -12,6 +12,8 @@ class LinePoint {
 		Point pos;						// Position du point
 		bool belongsToLine = false;		// true si le point appartient a une ligne
 		bool wasPivot = false;			// true si le point a ete utilise en tant que pivot
+		bool extremite = false;
+		double moduleCur = 0.0;
 		unsigned nbLines = 0;
 		
 	public:
@@ -20,37 +22,24 @@ class LinePoint {
 		
 		static std::vector<LinePoint> convertCompToLinePoint(const std::vector<Composante>& comps);
 		
-		const Point& getPos() const{
-			return pos;
-		}
+		const Point& getPos() const;
 		
-		bool isBelongsToLine() const{
-			return belongsToLine;
-		}
+		bool isBelongsToLine() const;
+		void setBelongsToLine(bool val);
 		
-		void setBelongsToLine(bool val){
-			belongsToLine = val;
-		}
+		bool getWasPivot() const;
+		void setWasPivot(bool val);
 		
-		bool getWasPivot() const{
-			return wasPivot;
-		}
+		bool isExtremite() const;
+		void setExtremite(bool val);
 		
-		void setWasPivot(bool val){
-			wasPivot = val;
-		}
+		unsigned getNbLines() const;
+		void incNbLines();
 		
-		unsigned getNbLines() const{
-			return nbLines;
-		}
+		double getModuleCur() const;
+		void setModuleCur(double val);
 		
-		void incNbLines(){
-			nbLines ++;
-		}
-		
-		double getDistance(const LinePoint& pt) const{
-			return sqrt((pos.x-pt.getPos().x)*(pos.x-pt.getPos().x) + (pos.y-pt.getPos().y)*(pos.y-pt.getPos().y));
-		}
+		double getDistance(const LinePoint& pt) const;
 };
 
 #endif
