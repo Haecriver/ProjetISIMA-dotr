@@ -21,6 +21,7 @@
 int main(int argc, const char* argv[] )
 {
 	// std::cerr << getBuildInformation() << std::endl;
+	
 	bool record_capture;
 	std::string path_video;
 	std::vector<Axe> axes;

@@ -2,6 +2,7 @@
 
 Axe::Axe():
 crossRatio(0.0),
+epsilon(0.0),
 	
 point1X(0.0),
 point1Y(0.0),
@@ -28,6 +29,7 @@ void Axe::write(FileStorage& fs) const                        //Write serializat
 {
 	fs << "{" 
 	<< "crossRatio" << crossRatio
+	<< "epsilon" << epsilon
 
 	<< "point1X" << point1X
 	<< "point1Y" << point1Y
@@ -55,7 +57,8 @@ void Axe::write(FileStorage& fs) const                        //Write serializat
 void Axe::read(const FileNode& node)                          //Read serialization for this class
 {  
 	crossRatio= (double)node["crossRatio"];
-
+	epsilon= (double)node["epsilon"];
+	
 	point1X= (double)node["point1X"];
 	point1Y= (double)node["point1Y"];
 	point1Z= (double)node["point1Z"];

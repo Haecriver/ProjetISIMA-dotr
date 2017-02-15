@@ -35,10 +35,10 @@ Line::Line(Point p1, Point p2) : Line() {
 	theta = atan(((double)other.y-(double)pivot.y)/((double)other.x-(double)pivot.x)) * 180 / M_PI;
 }
 
-bool Line::getIncludedPoints(vector<LinePoint>& allPoints, bool careBelongsToLine){
+bool Line::getIncludedPoints(std::vector<LinePoint>& allPoints, bool careBelongsToLine){
 	double estimatedY;
 	bool res = false;
- 	vector<LinePoint*> ref_pts;
+ 	std::vector<LinePoint*> ref_pts;
 	for(unsigned i = 0; i<allPoints.size(); i++){
 		LinePoint pt = allPoints[i];
 	 	estimatedY = a*(double)pt.getPos().x + b;	// Calcul du y avec l'equation de la droite
@@ -79,10 +79,10 @@ bool Line::getIncludedPoints(vector<LinePoint>& allPoints, bool careBelongsToLin
 	return res;
 }
 
-bool Line::getIncludedPointsPolar(vector<LinePoint>& allPoints){
+bool Line::getIncludedPointsPolar(std::vector<LinePoint>& allPoints){
 	bool res = false;
 	double theta_cur;
- 	vector<LinePoint*> ref_pts;
+ 	std::vector<LinePoint*> ref_pts;
  	
  	// on va retirer pivot.x, pivot.y aux autres points 
 	// pour deplacer le repere sur ce point

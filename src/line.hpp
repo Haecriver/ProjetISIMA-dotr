@@ -30,8 +30,8 @@ class Line{
 		Line(double pA, double pB);
 		Line(Point p1, Point p2);
 		
-		bool getIncludedPoints(vector<LinePoint>& allPoints, bool careBelongsToLine=true);
-		bool getIncludedPointsPolar(vector<LinePoint>& allPoints);
+		bool getIncludedPoints(std::vector<LinePoint>& allPoints, bool careBelongsToLine=true);
+		bool getIncludedPointsPolar(std::vector<LinePoint>& allPoints);
 		
 		bool sameCrossRatio(double pCrossRatio){
 			return (crossRatio >  pCrossRatio - ESPISLON_CROSS_RATIO) 
