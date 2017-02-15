@@ -6,7 +6,6 @@ Line::Line(double pA, double pB):
 a(pA),b(pB)
 {}
 
-
 Line::Line(Point p1, Point p2) : Line() {
 	pivot = Point(p1.x,p1.y);
 	other = Point(p2.x,p2.y);
@@ -34,7 +33,7 @@ Line::Line(Point p1, Point p2) : Line() {
 	// On cacul le theta du point qui fait la ligne
 	theta = atan(((double)other.y-(double)pivot.y)/((double)other.x-(double)pivot.x)) * 180 / M_PI;
 }
-
+/*
 bool Line::getIncludedPoints(std::vector<LinePoint>& allPoints, bool careBelongsToLine){
 	double estimatedY;
 	bool res = false;
@@ -77,48 +76,53 @@ bool Line::getIncludedPoints(std::vector<LinePoint>& allPoints, bool careBelongs
 		computeCrossRatio();
 	}
 	return res;
-}
+}*/
 
 bool Line::getIncludedPointsPolar(std::vector<LinePoint>& allPoints){
 	bool res = false;
 	double theta_cur;
+	
+	double epsilon_theta_cur = EPSILON_THETA;
  	std::vector<LinePoint*> ref_pts;
  	
- 	// on va retirer pivot.x, pivot.y aux autres points 
-	// pour deplacer le repere sur ce point
+	// On fait varier la marge d'erreur
+	for(epsilon_theta_cur = EPSILON_THETA; epsilon_theta_cur <= EPSILON_THETA_MAX && ref_pts.size() != NB_POINTS; epsilon_theta_cur += 0.2){
+		// On nettoie le vecteur s'il n'est pas vide
+		if(!ref_pts.empty()) { ref_pts.clear(); }
 		
-	for(unsigned i = 0; i<allPoints.size(); i++){
-		LinePoint pt = allPoints[i];
+		// on va retirer pivot.x, pivot.y aux autres points 
+		// pour deplacer le repere sur ce point
 		
-		// Cas ou on tombe sur le pivot
-		if(pt.getPos().y == pivot.y && pt.getPos().x == pivot.x){
-			// On le rajoute
-			allPoints[i].setModuleCur(0.0);
-			ref_pts.push_back(&allPoints[i]);
-		} else {
-			// On cacul le theta d'un autre point
-			theta_cur = atan(((double)pt.getPos().y-(double)pivot.y)/((double)pt.getPos().x-(double)pivot.x)) * 180 / M_PI;
-		
-			// On verifie que le point estimee correspond avec le vrai point y
-		 	// Si c'est le cas alors le point est sur la droite
-			if((!pt.isBelongsToLine() || pt.isExtremite()) &&
-				theta_cur  > theta - EPSILON && theta_cur < theta + EPSILON){
-				// Considere comme valide
-				allPoints[i].setModuleCur(
-					(pt.getPos().y-pivot.y)*(pt.getPos().y-pivot.y) + 
-					(pt.getPos().x-pivot.x)*(pt.getPos().x-pivot.x));
-				
+		for(unsigned i = 0; i<allPoints.size(); i++){
+			LinePoint pt = allPoints[i];
+			
+			// Cas ou on tombe sur le pivot
+			if(pt.getPos().y == pivot.y && pt.getPos().x == pivot.x){
+				// On le rajoute
+				allPoints[i].setModuleCur(0.0);
 				ref_pts.push_back(&allPoints[i]);
+			} else {
+				// On cacul le theta d'un autre point
+				theta_cur = atan(((double)pt.getPos().y-(double)pivot.y)/((double)pt.getPos().x-(double)pivot.x)) * 180 / M_PI;
+			
+				// On verifie que le point estimee correspond avec le vrai point y
+				// Si c'est le cas alors le point est sur la droite
+				if((!pt.isBelongsToLine() || pt.isExtremite()) &&
+					theta_cur  > theta - epsilon_theta_cur && theta_cur < theta + epsilon_theta_cur){
+					// Considere comme valide
+					allPoints[i].setModuleCur(
+						(pt.getPos().y-pivot.y)*(pt.getPos().y-pivot.y) + 
+						(pt.getPos().x-pivot.x)*(pt.getPos().x-pivot.x));
+					
+					ref_pts.push_back(&allPoints[i]);
+				}
 			}
 		}
 	}
 	
 	// Si on a le bon nombre de points
 	if(ref_pts.size() == NB_POINTS){
-	
-		// On calcul les modules
-		
-		
+			
 		// On les trie en fonction de leur module par rapport au pivot
 		sort(ref_pts.begin(), ref_pts.end(), 
 			[](LinePoint* a, LinePoint* b) -> bool

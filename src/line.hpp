@@ -20,8 +20,9 @@ class Line{
 		Point other;
 		
 		const static unsigned NB_POINTS = 4;				// Nombre de points contenus par droite
-		constexpr static double EPSILON = 2.5; 	// Marge erreur
-		constexpr static double ESPISLON_CROSS_RATIO = 0.20;
+		constexpr static double EPSILON_THETA = 2.0; 		// Marge erreur
+		constexpr static double EPSILON_THETA_MAX = 3.0; 	// Marge erreur max
+		constexpr static double EPSILON_CROSS_RATIO = 0.20;
 		double crossRatio;						// Cross ratio de la droite
 		
 	public:
@@ -33,9 +34,9 @@ class Line{
 		bool getIncludedPoints(std::vector<LinePoint>& allPoints, bool careBelongsToLine=true);
 		bool getIncludedPointsPolar(std::vector<LinePoint>& allPoints);
 		
-		bool sameCrossRatio(double pCrossRatio){
-			return (crossRatio >  pCrossRatio - ESPISLON_CROSS_RATIO) 
-					&& (crossRatio < pCrossRatio + ESPISLON_CROSS_RATIO);
+		bool sameCrossRatio(double pCrossRatio, double epsilon = EPSILON_CROSS_RATIO){
+			return (crossRatio >  pCrossRatio - epsilon) 
+					&& (crossRatio < pCrossRatio + epsilon);
 		}
 		
 		void computeCrossRatio();

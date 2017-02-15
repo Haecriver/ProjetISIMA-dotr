@@ -29,15 +29,15 @@ Mat DetectLine::render(Mat& img){
 	// On affiche les lignes graphiquement
 	for(Line el_line: lines){
 
-		if(el_line.sameCrossRatio(axes[0].crossRatio)){
+		if(el_line.sameCrossRatio(axes[0].crossRatio, axes[0].epsilon)){
 			// X
 			str = "Axe X";
 			color = Scalar(255, 0, 0);
-		}else if (el_line.sameCrossRatio(axes[1].crossRatio)){
+		}else if (el_line.sameCrossRatio(axes[1].crossRatio, axes[1].epsilon)){
 			// Y
 			str = "Axe Y";
 			color = Scalar(0, 255, 0);
-		}else if (el_line.sameCrossRatio(axes[2].crossRatio)){
+		}else if (el_line.sameCrossRatio(axes[2].crossRatio, axes[2].epsilon)){
 			// Z
 			str = "Axe Z";
 			color = Scalar(0, 0, 255);
@@ -120,7 +120,7 @@ void DetectLine::getLinesFromPoints(Mat& img){
 					Scalar(0, 255, 0), 1);
 				
 				imshow("Searching lines",display_cur);
-				waitKey(500);
+				waitKey(200);
 				display_cur.release();
 			}
 			
@@ -135,7 +135,7 @@ void DetectLine::getLinesFromPoints(Mat& img){
 				// On check si le cross ratio existe
 				for(Axe axe : axes){
 					crValid = crValid 
-						|| lineCur.sameCrossRatio(axe.crossRatio);
+						|| lineCur.sameCrossRatio(axe.crossRatio,axe.epsilon);
 				}
 				
 				// On check si on a pas deja une ligne comme ca
@@ -168,8 +168,6 @@ void DetectLine::getLinesFromPoints(Mat& img){
 			
 			// Si on a teste tous les points disponibles
 			if(lonelyPoints.empty()){	
-				// On increment le nombre d'iteration d'erreurs
-				nb_iterations++;
 				
 				// On stop la boucle
 				searchingForPoints = false;
@@ -184,10 +182,8 @@ void DetectLine::getLinesFromPoints(Mat& img){
 		// deja compris dans les lignes et le vecteur des points qui n'ont
 		// pas ete pivot
 		for(unsigned i = 0; i < allPoints.size(); i++){
-			if(!allPoints[i].isBelongsToLine()){
-				if(!allPoints[i].isExtremite()){
-					lonelyPoints.push_back(&allPoints[i]);
-				}
+			if(!allPoints[i].isBelongsToLine() || allPoints[i].isExtremite()){
+				lonelyPoints.push_back(&allPoints[i]);
 				
 				if(!allPoints[i].getWasPivot()){
 					wasntPivotPoints.push_back(&allPoints[i]);
@@ -195,9 +191,21 @@ void DetectLine::getLinesFromPoints(Mat& img){
 			}
 		}
 		
+		// Si le nombre d'ite nest pas depasse
+		if(nb_iterations < NB_MAX_ITERATION){
+			nb_iterations ++;
+			// On rajoute les points non utilise aux points pivot
+			for(unsigned i = 0; i < allPoints.size(); i++){
+				if(!allPoints[i].isBelongsToLine()){
+					allPoints[i].setWasPivot(false);
+					wasntPivotPoints.push_back(&allPoints[i]);
+				}
+			}
+		}
+		
 		// Si le nombre de lignes est atteint ou si le nombre 
 		// d'iteration max a ete depasse, on stop l'algorithme
-		searchingForLines = !wasntPivotPoints.empty() && lines.size() != NB_LINES && nb_iterations < NB_MAX_ITERATION;
+		searchingForLines = !wasntPivotPoints.empty() && lines.size() != NB_LINES;
 	}
 }
 

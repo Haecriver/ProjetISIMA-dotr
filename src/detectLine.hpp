@@ -22,7 +22,7 @@ class DetectLine : public Filtre{
 		const unsigned NB_LINES;						// Nombre de lignes a detecte
 		const bool DISPLAY_SEARCHING;					// Affichage de la recherche de ligne
 		const static bool DISPLAY_CR_ERROR=true;		// Affichage de la recherche de ligne
-		const static unsigned NB_MAX_ITERATION = 10;	// Nombre max d'iterations en erreur toleree
+		const static unsigned NB_MAX_ITERATION = 3;	// Nombre max d'iterations en erreur toleree
 
 		
 		std::vector<Line> lines;						// Stockage des lignes detectees

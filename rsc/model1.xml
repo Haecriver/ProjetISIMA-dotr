@@ -2,7 +2,7 @@
 <opencv_storage>
 <axeX>
 	<crossRatio>1.111</crossRatio>
-	<epsilon>0.0</epsilon>
+	<epsilon>0.05</epsilon>
 	
 	<point1X>0.0</point1X>
 	<point1Y>0.0</point1Y>
@@ -27,7 +27,7 @@
 	
 <axeY>
 	<crossRatio>2.0</crossRatio>
-	<epsilon>0.0</epsilon>
+	<epsilon>0.1</epsilon>
 	
 	<point1X>0.0</point1X>
 	<point1Y>0.0</point1Y>
@@ -52,7 +52,7 @@
 
 <axeZ>
 	<crossRatio>1.666</crossRatio>
-	<epsilon>0.0</epsilon>
+	<epsilon>0.22</epsilon>
 	
 	<point1X>0.0</point1X>
 	<point1Y>0.0</point1Y>
