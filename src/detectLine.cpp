@@ -24,7 +24,7 @@ Mat DetectLine::render(Mat& img){
 	
 	// On calcul les lignes depuis le vecteur de composants
 	// donne au constructeur
-	getLinesFromPoints2(res);
+	getLinesFromPoints(res);
 	
 	// On affiche les lignes graphiquement
 	for(Line el_line: lines){
