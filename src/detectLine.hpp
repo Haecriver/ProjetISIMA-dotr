@@ -16,10 +16,12 @@ using std::string;
 
 class DetectLine : public Filtre{
 	private:
+		std::vector<LinePoint> allPoints;	
 		const std::vector<Axe>& axes;					// Vecteur des axes du modele
 		const std::vector<Composante>& comps;			// Vecteur de composants donne par le filtre d'etiquetage
 		const unsigned NB_LINES;						// Nombre de lignes a detecte
 		const bool DISPLAY_SEARCHING;					// Affichage de la recherche de ligne
+		const static bool DISPLAY_CR_ERROR=true;		// Affichage de la recherche de ligne
 		const static unsigned NB_MAX_ITERATION = 10;	// Nombre max d'iterations en erreur toleree
 
 		

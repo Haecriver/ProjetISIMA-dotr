@@ -12,6 +12,7 @@ struct Axe {
 	Axe();
 	
 	double crossRatio;
+	double epsilon;
 		
 	double point1X;
 	double point1Y;

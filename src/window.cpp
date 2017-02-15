@@ -51,7 +51,7 @@ void Window::chargementImgs(){
 
 // On enregistre les images
 void Window::enregistrementImgs(std::string nameFile){
-	string pathFichier="rsc/" + nameFile + ".avi";
+	std::string pathFichier="rsc/" + nameFile + ".avi";
 	int codec = CV_FOURCC('m', 'p', '4', 'v');
 	outputVideo.open(pathFichier, codec, 15.0, Size(640, 480), true);
 	if (!outputVideo.isOpened())

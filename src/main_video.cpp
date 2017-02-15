@@ -21,6 +21,7 @@
 int main(int argc, const char* argv[] )
 {
 	// std::cerr << getBuildInformation() << std::endl;
+	
 	bool record_capture;
 	std::string path_video;
 	std::vector<Axe> axes;
@@ -28,7 +29,7 @@ int main(int argc, const char* argv[] )
 	if(argc >= 2){
 		path_video = std::string(argv[1]);
 	} else {
-		path_video = "./rsc/Scenario_3_fluxFPGA/in_";
+		path_video = "./rsc/Scenario_4_fluxFPGA/in_";
 	}
 	
 	// Chargement du modele
