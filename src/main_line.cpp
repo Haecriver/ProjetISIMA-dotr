@@ -14,11 +14,15 @@
 #include "detectLine.hpp"
 #include "grayscale.hpp"
 #include "axe.hpp"
+#include "poseEstimation.hpp"
 
 int main(int argc, const char* argv[] )
 {
-	std::string path_video;
+	std::string path_video, path_camera_matrix="./rsc/calibration_files/res_calib/calibration1.xml";
 	std::vector<Axe> axes;
+	FileStorage fs( path_camera_matrix, FileStorage::READ );
+	cv::Mat K;
+	fs["Camera_Matrix"] >> K;
 	
 	if(argc >= 2){
 		path_video = std::string(argv[1]);
@@ -44,7 +48,8 @@ int main(int argc, const char* argv[] )
 	
 	Bthreshold* filtreBthreshold = new Bthreshold(200);
 	Etiquetage* filtreEtiquetage = new Etiquetage();
-	DetectLine* filtreDetectLine = new DetectLine(axes, filtreEtiquetage->getComps(),3,true);
+	DetectLine* filtreDetectLine = new DetectLine(axes, filtreEtiquetage->getComps(),3,false);
+	PoseEstimation* filtrePoseEstimation = new PoseEstimation(K,axes,filtreDetectLine->getLines());
 	
 	// Parametrage de la sortie filtree
 	etiquetage.addFiltre(new Grayscale());
@@ -55,6 +60,7 @@ int main(int argc, const char* argv[] )
 	line.addFiltre(filtreBthreshold);
 	line.addFiltre(filtreEtiquetage);
 	line.addFiltre(filtreDetectLine);
+	line.addFiltre(filtrePoseEstimation);
 
 	// Ajout des rendus a la fenetre
 	window1.addDisplay(source);

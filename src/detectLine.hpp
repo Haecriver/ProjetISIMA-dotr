@@ -40,6 +40,10 @@ class DetectLine : public Filtre{
 		// Methodes
 		Mat render(Mat& img);
 		
+		std::vector<Line>& getLines(){
+			return lines;
+		}
+		
 
 };
 

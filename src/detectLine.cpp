@@ -128,13 +128,13 @@ void DetectLine::getLinesFromPoints(Mat& img){
 			if(lineCur.getIncludedPointsPolar(allPoints)){
 			
 				// On verifie le cross ratio de la ligne
-			 	Axe* axeUsed = NULL;
+			 	const Axe* axeUsed = NULL;
 				bool crNotUsed = true;
 				
 				
 				// On check si le cross ratio existe
-				for(Axe axe : axes){
-					if(lineCur.sameCrossRatio(axe.crossRatio,axe.epsilon)){
+				for(unsigned i=0; i<axes.size(); i++){
+					if(lineCur.sameCrossRatio(axes[i].crossRatio,axes[i].epsilon)){
 						for(Line line : lines){
 							// On check si on a pas deja une ligne comme ca
 							crNotUsed = crNotUsed 
@@ -142,7 +142,7 @@ void DetectLine::getLinesFromPoints(Mat& img){
 						}
 						// Si on a trouver un axe valid, on le met dans le pointeur
 						if(crNotUsed) {
-							axeUsed = &axe;
+							axeUsed = &axes[i];
 						}
 					}
 				}
@@ -151,11 +151,9 @@ void DetectLine::getLinesFromPoints(Mat& img){
 				if(axeUsed != NULL || DISPLAY_CR_ERROR){
 					// Si oui
 					// On met les points du vecteur dans le bon sens
-					std::cout << "-----------------"  << std::endl;
 					if(axeUsed != NULL && !lineCur.firstPointsHasGoodRatio(axeUsed->point1CR)){
 						lineCur.reversePoints();
 					}
-					std::cout << "deb:" << lineCur.getPts()[0]->getPos() << ";fin:" <<  lineCur.getPts()[3]->getPos() << std::endl;
 					
 					// On stock la ligne
 					lines.push_back(lineCur);
