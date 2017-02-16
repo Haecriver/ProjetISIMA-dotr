@@ -151,9 +151,11 @@ void DetectLine::getLinesFromPoints(Mat& img){
 				if(axeUsed != NULL || DISPLAY_CR_ERROR){
 					// Si oui
 					// On met les points du vecteur dans le bon sens
-					if(axeUsed != NULL && !lineCur.firstPointsHasGoodRatio(axeUsed->point1CR,img)){
+					std::cout << "-----------------"  << std::endl;
+					if(axeUsed != NULL && !lineCur.firstPointsHasGoodRatio(axeUsed->point1CR)){
 						lineCur.reversePoints();
 					}
+					std::cout << "deb:" << lineCur.getPts()[0]->getPos() << ";fin:" <<  lineCur.getPts()[3]->getPos() << std::endl;
 					
 					// On stock la ligne
 					lines.push_back(lineCur);

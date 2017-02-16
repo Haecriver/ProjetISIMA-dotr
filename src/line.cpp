@@ -173,17 +173,11 @@ void Line::computeCrossRatio(){
 	}
 }
 
-bool Line::firstPointsHasGoodRatio(float ratioPoint, Mat display_cur){
+bool Line::firstPointsHasGoodRatio(double ratioPoint){
 	double dstPointDeb[3], dstPointFin[3];
     int index = 0;
     double ratioPointDeb, ratioPointFin;
-    
-    Scalar color(255,255,255);
-	int fontFace = CV_FONT_HERSHEY_COMPLEX_SMALL;
-	double fontScale = 1;
-	int thickness = 1;
-	string str;
-	
+    	
 	for(int i = 1; i < 4; i++){
 		dstPointDeb[index] = pts[0]->getDistance(*pts[i]);
 		index ++;
@@ -199,17 +193,14 @@ bool Line::firstPointsHasGoodRatio(float ratioPoint, Mat display_cur){
 	
 	ratioPointDeb = dstPointDeb[0]/dstPointDeb[2];
 	ratioPointFin = dstPointFin[0]/dstPointFin[2];
-	
-	Mat display = display_cur.clone();
 
-	putText(display, std::to_string(ratioPointDeb), pts[0]->getPos(), fontFace, fontScale,
-			color, thickness);
-	putText(display, std::to_string(ratioPointFin), pts[3]->getPos(), fontFace, fontScale,
-			color, thickness);
-	imshow("ratio points",display);
-	waitKey(500);
-	display.release();
-	
+	std::cout << "deb:" << pts[0]->getPos() << ";fin:" <<  pts[3]->getPos() << std::endl;
+	std::cout << "rdeb:" << ratioPointDeb << ";rfin:" << ratioPointFin << std::endl;
+	if(abs(ratioPointDeb - ratioPoint) < abs(ratioPointFin - ratioPoint)){
+		std::cout << "on inverse pas" << std::endl;
+	}else{
+		std::cout << "on inverse" << std::endl;
+	}
 
 	return abs(ratioPointDeb - ratioPoint) < abs(ratioPointFin - ratioPoint);
 }

@@ -59,7 +59,7 @@ class Line{
 			}	
 		}
 		
-		bool firstPointsHasGoodRatio(float ratioPoint, Mat display_cur);
+		bool firstPointsHasGoodRatio(double ratioPoint);
 		
 		void reversePoints(){
 			std::reverse(pts.begin(),pts.end());
