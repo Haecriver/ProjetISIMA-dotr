@@ -172,4 +172,45 @@ void Line::computeCrossRatio(){
 		std::cout << "Nb pts incorrect" << std::endl;
 	}
 }
+
+bool Line::firstPointsHasGoodRatio(float ratioPoint, Mat display_cur){
+	double dstPointDeb[3], dstPointFin[3];
+    int index = 0;
+    double ratioPointDeb, ratioPointFin;
+    
+    Scalar color(255,255,255);
+	int fontFace = CV_FONT_HERSHEY_COMPLEX_SMALL;
+	double fontScale = 1;
+	int thickness = 1;
+	string str;
+	
+	for(int i = 1; i < 4; i++){
+		dstPointDeb[index] = pts[0]->getDistance(*pts[i]);
+		index ++;
+	}
+	index = 0;
+	for(int i = 0; i < 3; i++){
+		dstPointFin[index] = pts[3]->getDistance(*pts[i]);
+		index ++;
+	}
+	
+	std::sort (dstPointDeb, dstPointDeb+3);
+	std::sort (dstPointFin, dstPointFin+3);
+	
+	ratioPointDeb = dstPointDeb[0]/dstPointDeb[2];
+	ratioPointFin = dstPointFin[0]/dstPointFin[2];
+	
+	Mat display = display_cur.clone();
+
+	putText(display, std::to_string(ratioPointDeb), pts[0]->getPos(), fontFace, fontScale,
+			color, thickness);
+	putText(display, std::to_string(ratioPointFin), pts[3]->getPos(), fontFace, fontScale,
+			color, thickness);
+	imshow("ratio points",display);
+	waitKey(500);
+	display.release();
+	
+
+	return abs(ratioPointDeb - ratioPoint) < abs(ratioPointFin - ratioPoint);
+}
 		

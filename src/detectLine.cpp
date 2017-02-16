@@ -128,24 +128,33 @@ void DetectLine::getLinesFromPoints(Mat& img){
 			if(lineCur.getIncludedPointsPolar(allPoints)){
 			
 				// On verifie le cross ratio de la ligne
-				bool crValid = false;
+			 	Axe* axeUsed = NULL;
 				bool crNotUsed = true;
 				
 				
 				// On check si le cross ratio existe
 				for(Axe axe : axes){
-					crValid = crValid 
-						|| lineCur.sameCrossRatio(axe.crossRatio,axe.epsilon);
+					if(lineCur.sameCrossRatio(axe.crossRatio,axe.epsilon)){
+						for(Line line : lines){
+							// On check si on a pas deja une ligne comme ca
+							crNotUsed = crNotUsed 
+								&& !lineCur.sameCrossRatio(line.getCrossRatio());
+						}
+						// Si on a trouver un axe valid, on le met dans le pointeur
+						if(crNotUsed) {
+							axeUsed = &axe;
+						}
+					}
 				}
 				
-				// On check si on a pas deja une ligne comme ca
-				for(Line line : lines){
-					crNotUsed = crNotUsed 
-						&& !lineCur.sameCrossRatio(line.getCrossRatio());
-				}
 				
-				if((crValid || DISPLAY_CR_ERROR) && crNotUsed){
+				if(axeUsed != NULL || DISPLAY_CR_ERROR){
 					// Si oui
+					// On met les points du vecteur dans le bon sens
+					if(axeUsed != NULL && !lineCur.firstPointsHasGoodRatio(axeUsed->point1CR,img)){
+						lineCur.reversePoints();
+					}
+					
 					// On stock la ligne
 					lines.push_back(lineCur);
 				
@@ -159,8 +168,8 @@ void DetectLine::getLinesFromPoints(Mat& img){
 					if(DISPLAY_SEARCHING){
 						line(display, lineCur.getPts()[0]->getPos(), 
 							lineCur.getPts()[3]->getPos(),
-							Scalar(255, 255, 0), 1);
-				
+							Scalar(255, 255, 0), 1);			
+							
 						imshow("Searching lines",display);
 					}
 				}

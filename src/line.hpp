@@ -58,6 +58,12 @@ class Line{
 				pts.push_back(ppts[i]);
 			}	
 		}
+		
+		bool firstPointsHasGoodRatio(float ratioPoint, Mat display_cur);
+		
+		void reversePoints(){
+			std::reverse(pts.begin(),pts.end());
+		}
 };
 
 #endif
