@@ -23,6 +23,7 @@ int main(int argc, const char* argv[] )
 	FileStorage fs( path_camera_matrix, FileStorage::READ );
 	cv::Mat K;
 	fs["Camera_Matrix"] >> K;
+	K.convertTo(K, CV_32F);
 	
 	if(argc >= 2){
 		path_video = std::string(argv[1]);

@@ -8,10 +8,26 @@ lines(plines)
 }
 
 Mat PoseEstimation::render(Mat& img){
-	Mat res(img.clone());
+	Mat res(img.clone()), M, invK, Rt;
 	computeCorrespondingPoints();
-	Mat M = computeProjectionMatrix();
+	M = computeProjectionMatrix();
 	// Extract [R|t]
+	invK = K.inv(DECOMP_CHOLESKY);
+	Rt = invK * M;
+	
+	/*std::cout << Rt.at<double>(0,0) << std::endl;
+	std::cout << Rt.at<double>(1,0) << std::endl;
+	std::cout << Rt.at<double>(2,0) << std::endl;
+	std::cout << Rt.at<double>(3,0) << std::endl;
+	std::cout << Rt.at<double>(0,1) << std::endl;
+	std::cout << Rt.at<double>(1,1) << std::endl;
+	std::cout << Rt.at<double>(2,1) << std::endl;
+	std::cout << Rt.at<double>(3,1) << std::endl;
+	std::cout << Rt.at<double>(0,2) << std::endl;
+	std::cout << Rt.at<double>(1,2) << std::endl;
+	std::cout << Rt.at<double>(2,2) << std::endl;
+	std::cout << Rt.at<double>(3,2) << std::endl;*/
+	std::cout << Rt << std::endl;
 	
 	return res;
 }
@@ -20,7 +36,8 @@ void PoseEstimation::computeCorrespondingPoints(){
 	correspondingPoints.clear();
 
 	// Creation de la correspondance des points
-	for(Axe axe: axes){
+	for(unsigned indexAxe=0; indexAxe < 2; indexAxe++){
+		const Axe& axe = axes[indexAxe];
 		// On cherche la ligne correspondante
 		Line line;
 		bool found = false;
@@ -70,7 +87,8 @@ Mat PoseEstimation::computeProjectionMatrix(){
 	
 	Mat At;
 	Mat invAtA;
-			
+	
+	std::cout<<A<<std::endl;
 	// Calcul de la matrice A et b
 	int index=0;
 	for(auto pair : correspondingPoints){
@@ -100,14 +118,18 @@ Mat PoseEstimation::computeProjectionMatrix(){
 		
 		b.at<double>(1,index) = pair.first.getPos().x;
 		b.at<double>(1,index+1) = pair.first.getPos().y;
-		
+		std::cout<<A<<std::endl;
 		index+=2;
 	}
+	std::cout<<A<<std::endl;
+	std::cout<<b<<std::endl;
+	
 	Mat temp;
 	
 	// Calcul sur les matrices
 	// calcul At
-	transpose(A, At);
+	//At = A.t();
+	transpose(A,At);
 	
 	// calcul invAtA
 	mulTransposed(A,temp,true);
@@ -131,17 +153,5 @@ Mat PoseEstimation::computeProjectionMatrix(){
 	M.at<double>(2,2) = x.at<double>(0,10);
 	M.at<double>(3,2) = 1.0;
 	
-	std::cout << M.at<double>(0,0) << std::endl;
-	std::cout << M.at<double>(1,0) << std::endl;
-	std::cout << M.at<double>(2,0) << std::endl;
-	std::cout << M.at<double>(3,0) << std::endl;
-	std::cout << M.at<double>(0,1) << std::endl;
-	std::cout << M.at<double>(1,1) << std::endl;
-	std::cout << M.at<double>(2,1) << std::endl;
-	std::cout << M.at<double>(3,1) << std::endl;
-	std::cout << M.at<double>(0,2) << std::endl;
-	std::cout << M.at<double>(1,2) << std::endl;
-	std::cout << M.at<double>(2,2) << std::endl;
-	std::cout << M.at<double>(3,2) << std::endl;
 	return M;
 }
