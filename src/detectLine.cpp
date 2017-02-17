@@ -1,7 +1,7 @@
 #include "detectLine.hpp"
 
-std::random_device rd;
-std::mt19937 gen(rd());
+//std::random_device rd;
+std::mt19937 gen;
 
 // Contructeurs
 DetectLine::DetectLine(const std::vector<Axe>& pAxes, const std::vector<Composante>& pcomps,

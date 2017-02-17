@@ -1,6 +1,6 @@
 #include "poseEstimation.hpp"
 
-PoseEstimation::PoseEstimation(Mat& pK, const vector<Axe>& paxes, const vector<Line>& plines):
+PoseEstimation::PoseEstimation(Mat& pK, const std::vector<Axe>& paxes, const std::vector<Line>& plines):
 K(pK),
 axes(paxes),
 lines(plines)
@@ -12,7 +12,7 @@ Mat PoseEstimation::render(Mat& img){
 	int fontFace = CV_FONT_HERSHEY_COMPLEX_SMALL;
 	double fontScale = 0.6;
 	int thickness = 1;
-	string str;
+	std::string str;
 	
 	double rotX,rotY,rotZ;
 	Mat res(img.clone()), M, invK, Rt;
@@ -96,9 +96,9 @@ void PoseEstimation::computeCorrespondingPoints(){
 
 Mat PoseEstimation::computeProjectionMatrix(){
 	// Init de la matrice de projection
-	Mat M = Mat::zeros(3, 4, CV_64F);
-	Mat A = Mat::zeros(2*correspondingPoints.size(), 11, CV_64F);
-	Mat b = Mat::zeros(2*correspondingPoints.size(), 1, CV_64F);
+	Mat M; M = Mat(3, 4, CV_64F);
+	Mat A; A = Mat(2*correspondingPoints.size(), 11, CV_64F);
+	Mat b; b = Mat(2*correspondingPoints.size(), 1, CV_64F);
 	
 	Mat x;
 	
