@@ -96,9 +96,10 @@ void PoseEstimation::computeCorrespondingPoints(){
 
 Mat PoseEstimation::computeProjectionMatrix(){
 	// Init de la matrice de projection
-	Mat M; M = Mat(3, 4, CV_64F);
-	Mat A; A = Mat(2*correspondingPoints.size(), 11, CV_64F);
-	Mat b; b = Mat(2*correspondingPoints.size(), 1, CV_64F);
+	Mat M(3, 4, CV_64F);
+	double b_tab [2*correspondingPoints.size()];
+	Mat b(2*correspondingPoints.size(), 1, CV_64F, b_tab);
+	Mat A(2*correspondingPoints.size(), 11, CV_64F);
 	
 	Mat x;
 	
@@ -114,7 +115,6 @@ Mat PoseEstimation::computeProjectionMatrix(){
 	// Calcul de la matrice A et b
 	unsigned index = 0;
 	for(std::pair<LinePoint, std::vector<double> > pair : correspondingPoints){		
-	// TODO: REMPLIR A CORRECTEMENT
 		A.at<double>(index,0) = pair.second[0];
 		A.at<double>(index,1) = pair.second[1];
 		A.at<double>(index,2) = pair.second[2];
@@ -157,7 +157,7 @@ Mat PoseEstimation::computeProjectionMatrix(){
 	//std::cout << At << std::endl;
 	
 	// calcul invAtA
-	invert(At*A,invAtA,DECOMP_SVD);
+	invAtA = (At*A).inv(DECOMP_SVD);
 	//std::cout << invAtA << std::endl;
 	
 	// calcul M

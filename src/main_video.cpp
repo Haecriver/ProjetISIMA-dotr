@@ -61,7 +61,7 @@ int main(int argc, const char* argv[] )
 	filtered.addFiltre(new Bthreshold(240));
 	filtered.addFiltre(filtreEtiquetage);
 	filtered.addFiltre(filtreDetectLine);
-	//filtered.addFiltre(new PoseEstimation(K,axes,filtreDetectLine->getLines()));
+	filtered.addFiltre(new PoseEstimation(K,axes,filtreDetectLine->getLines()));
 	// Ajout des rendus a la fenetre
 	window.addDisplay(source);
 	window.addDisplay(filtered);
