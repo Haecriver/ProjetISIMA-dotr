@@ -20,6 +20,8 @@ Mat DetectLine::render(Mat& img){
 	int fontFace = CV_FONT_HERSHEY_COMPLEX_SMALL;
 	double fontScale = 1;
 	int thickness = 1;
+	int baseline = 0;
+	baseline += thickness;
 	string str;
 	
 	// On calcul les lignes depuis le vecteur de composants
@@ -56,7 +58,7 @@ Mat DetectLine::render(Mat& img){
 		line(res, el_line.getPts()[0]->getPos(), 
 			el_line.getPts()[3]->getPos(),
 			color, 3);
-		putText(res, str, el_line.getPts()[0]->getPos(), fontFace, fontScale,
+		putText(res, str, el_line.getPts()[3]->getPos(), fontFace, fontScale,
 			color, thickness);
 	}
 	

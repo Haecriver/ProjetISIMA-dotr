@@ -13,7 +13,7 @@ class PoseEstimation : public Filtre {
 		const std::vector<Axe>& axes;
 		const std::vector<Line>& lines;	
 		
-		std::vector<std::pair<LinePoint, double*> > correspondingPoints;
+		std::vector<std::pair<LinePoint, std::vector<double> > > correspondingPoints;
 		void computeCorrespondingPoints();
 		Mat computeProjectionMatrix();
 		

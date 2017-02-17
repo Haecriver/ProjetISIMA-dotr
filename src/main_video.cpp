@@ -17,14 +17,21 @@
 #include "adathreshold.hpp"
 #include "detectLine.hpp"
 #include "axe.hpp"
+#include "poseEstimation.hpp"
 
 int main(int argc, const char* argv[] )
 {
 	// std::cerr << getBuildInformation() << std::endl;
 	
 	bool record_capture;
-	std::string path_video;
+	std::string path_video, path_camera_matrix="./rsc/calibration_files/res_calib/calibration1.xml";
 	std::vector<Axe> axes;
+	
+	FileStorage fs( path_camera_matrix, FileStorage::READ );
+	cv::Mat K;
+	fs["Camera_Matrix"] >> K;
+	fs.release();
+	K.convertTo(K, CV_64F);
 	
 	if(argc >= 2){
 		path_video = std::string(argv[1]);
@@ -47,13 +54,14 @@ int main(int argc, const char* argv[] )
 	Display filtered;
 	
 	Etiquetage* filtreEtiquetage = new Etiquetage();
+	DetectLine* filtreDetectLine = new DetectLine(axes, filtreEtiquetage->getComps(),4);
 	
 	// Parametrage de la sortie filtree
 	filtered.addFiltre(new Grayscale());
 	filtered.addFiltre(new Bthreshold(240));
 	filtered.addFiltre(filtreEtiquetage);
-	filtered.addFiltre(new DetectLine(axes, filtreEtiquetage->getComps(),4));
-	
+	filtered.addFiltre(filtreDetectLine);
+	filtered.addFiltre(new PoseEstimation(K,axes,filtreDetectLine->getLines()));
 	// Ajout des rendus a la fenetre
 	window.addDisplay(source);
 	window.addDisplay(filtered);
