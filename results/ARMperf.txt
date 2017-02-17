@@ -1,4 +1,11 @@
+// Sans calcul de pose
 Taille images : 320*240
 Moyenne frames par seconde : 47.4 FPS
 Temps de calcul effectif : 4809.27ms
 Utilisation moyenne CPU : 80%
+
+// Avec calcul de pose
+Taille images : 320*240
+Moyenne frames par seconde : 45.7 FPS
+Temps de calcul effectif : 4987.5ms
+Utilisation moyenne CPU : 83%
