@@ -47,7 +47,7 @@ int main(int argc, const char* argv[] )
 	}
 	
 	//Chargements images
-	Window window(path_video, 20);
+	Window window(path_video, 100);
 	
 	// Creation des sorties
 	Display source;

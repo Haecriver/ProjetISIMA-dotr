@@ -1,10 +1,11 @@
 #include "window.hpp"
 
-Window::Window(std::string pPathRes, unsigned pFps, bool pImageMode):
+Window::Window(std::string pPathRes, unsigned pFps, bool pImageMode, bool pshowFps):
 PATH_RES(pPathRes),
 fps(pFps),
-msToWaitOpt(1000/fps),	// Nombre de seconde a attendre dans le meilleur des cas
-imageMode(pImageMode)
+msToWaitOpt(1000/fps),	// Nombre de milliseconde a attendre dans le meilleur des cas
+imageMode(pImageMode),
+showFps(pshowFps)
 {
 	chargementImgs();
 }
@@ -63,6 +64,8 @@ void Window::enregistrementImgs(std::string nameFile){
 void Window::renderAll(){
 	std::vector<Mat> displayRenders;
 	Mat render, img;
+	unsigned cpt = 0;
+	double effectiveTime = 0.0;
 	
 	// Chrono pour les fps
 	std::chrono::time_point<std::chrono::system_clock> start, end;
@@ -98,7 +101,14 @@ void Window::renderAll(){
 			end = std::chrono::system_clock::now();
 			std::chrono::duration<double> elapsed_seconds = end-start;
 			msToWait = msToWaitOpt - elapsed_seconds.count();
-		
+			if(showFps){
+				std::cout<<"== Image rendu en : " << elapsed_seconds.count()*1000
+					<< "ms soit :" << 1/ (elapsed_seconds.count()) << " FPS ==" <<std::endl;
+			}
+			
+			effectiveTime+=elapsed_seconds.count()*1000;
+			cpt++;
+			
 			// Si <0, cela veut dire que l'on a pas a attendre pour afficher l'image suivante
 			if(msToWait<0){
 				msToWait=0;
@@ -121,6 +131,8 @@ void Window::renderAll(){
 			}
 		}		
     }
+    std::cout<<"== Images rendues en : " << effectiveTime
+		<< "ms soit environ :" << 1/ (effectiveTime/(cpt*1000)) << " FPS ==" <<std::endl;
 }
 
 unsigned Window::getNbValidPicture(unsigned nbCompToFind, Etiquetage* filtre_etiquetage_courant){

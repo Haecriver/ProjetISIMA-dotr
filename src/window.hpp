@@ -21,8 +21,9 @@ class Window{
 		const std::string PATH_RES;
 		
 		unsigned fps;
-		int msToWaitOpt = 1000/fps;	// Nombre de seconde a attendre dans le meilleur des cas
+		int msToWaitOpt;	// Nombre de seconde a attendre dans le meilleur des cas
 		bool imageMode;
+		bool showFps;
 		
 		//std::vector<Mat> imgs;		// Liste des images chargees
 		VideoCapture _imgs;
@@ -31,7 +32,7 @@ class Window{
 		VideoWriter outputVideo;
 		
 	public:
-		Window(std::string pPathRes, unsigned pFps = 30, bool pImageMode = false);
+		Window(std::string pPathRes, unsigned pFps = 30, bool pImageMode = false, bool showFps = false);
 
 		Mat catImages(std::vector<Mat> imgs);
 		void chargementImgs();

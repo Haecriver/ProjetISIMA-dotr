@@ -1,0 +1,4 @@
+Taille images : 320*240
+Moyenne frames par seconde : 47.4 FPS
+Temps de calcul effectif : 4809.27ms
+Utilisation moyenne CPU : 80%
