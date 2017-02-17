@@ -194,7 +194,16 @@ bool Line::firstPointsHasGoodRatio(double ratioPoint){
 	ratioPointDeb = dstPointDeb[0]/dstPointDeb[2];
 	ratioPointFin = dstPointFin[0]/dstPointFin[2];
 
-	/*std::cout << "deb:" << pts[0]->getPos() << ";fin:" <<  pts[3]->getPos() << std::endl;
+	/*if(ratioPoint == 0.333){
+		std::cout << "AxeX" << std::endl;
+	}else if(ratioPoint == 0.5){
+		std::cout << "AxeY" << std::endl;
+	}else if(ratioPoint == 0.166){
+		std::cout << "AxeZ" << std::endl;
+	}else{
+		std::cout << "erreur" << std::endl;
+	}
+	std::cout << "deb:" << pts[0]->getPos() << ";fin:" <<  pts[3]->getPos() << std::endl;
 	std::cout << "ratio point:" << ratioPoint << std::endl;
 	std::cout << "rdeb:" << ratioPointDeb << ";rfin:" << ratioPointFin << std::endl;
 	std::cout << fabs(ratioPointDeb - ratioPoint) << "<" << fabs(ratioPointFin - ratioPoint) << std::endl;
@@ -203,6 +212,7 @@ bool Line::firstPointsHasGoodRatio(double ratioPoint){
 	}else{
 		std::cout << "on inverse" << std::endl;
 	}*/
+	
 	return fabs(ratioPointDeb - ratioPoint) < fabs(ratioPointFin - ratioPoint);
 }
 		

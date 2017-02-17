@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "linePoint.hpp"
+#include "axe.hpp"
 
 class Line{
 	private:
@@ -24,6 +25,7 @@ class Line{
 		constexpr static double EPSILON_THETA_MAX = 3.0; 	// Marge erreur max
 		constexpr static double EPSILON_CROSS_RATIO = 0.20;
 		double crossRatio;						// Cross ratio de la droite
+		const Axe* axe;
 		
 	public:
 		// Contructeurs
@@ -43,6 +45,14 @@ class Line{
 		
 		double getCrossRatio(){
 			return crossRatio;
+		}
+		
+		void setAxe(const Axe* paxe){
+			axe = paxe;
+		}
+		
+		const Axe* getAxe(){
+			return axe;
 		}
 		
 		

@@ -90,7 +90,7 @@ void DetectLine::getLinesFromPoints(Mat& img){
 		lonelyPoints.push_back(&allPoints[i]);
 		wasntPivotPoints.push_back(&allPoints[i]);
 	}
-	
+
 	// Tant que toutes les lignes n'ont pas ete trouvees
 	// Ou que le nombre d'iterations de l'algo a depasse le nb max
 	while(searchingForLines){
@@ -130,17 +130,18 @@ void DetectLine::getLinesFromPoints(Mat& img){
 			if(lineCur.getIncludedPointsPolar(allPoints)){
 			
 				// On verifie le cross ratio de la ligne
-			 	const Axe* axeUsed = NULL;
+			 	const Axe* axeUsed = nullptr;
 				bool crNotUsed = true;
-				
 				
 				// On check si le cross ratio existe
 				for(unsigned i=0; i<axes.size(); i++){
 					if(lineCur.sameCrossRatio(axes[i].crossRatio,axes[i].epsilon)){
 						for(Line line : lines){
 							// On check si on a pas deja une ligne comme ca
-							crNotUsed = crNotUsed 
-								&& !lineCur.sameCrossRatio(line.getCrossRatio());
+							if(line.getAxe() != nullptr){
+								crNotUsed = crNotUsed 
+									&& !lineCur.sameCrossRatio(line.getAxe()->crossRatio,line.getAxe()->epsilon);
+							}
 						}
 						// Si on a trouver un axe valid, on le met dans le pointeur
 						if(crNotUsed) {
@@ -149,17 +150,17 @@ void DetectLine::getLinesFromPoints(Mat& img){
 					}
 				}
 				
-				
 				if(axeUsed != NULL || DISPLAY_CR_ERROR){
 					// Si oui
 					// On met les points du vecteur dans le bon sens
 					if(axeUsed != NULL && !lineCur.firstPointsHasGoodRatio(axeUsed->point1CR)){
 						lineCur.reversePoints();
-					}
-					
-					// On stock la ligne
+					}	
+					 
+					// On stock la ligne et on reference l'axe
+					lineCur.setAxe(axeUsed);
 					lines.push_back(lineCur);
-				
+
 					// On reinitialise le nombre d'iteration
 					nb_iterations = 0;
 				
