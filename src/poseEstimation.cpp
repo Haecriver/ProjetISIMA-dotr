@@ -46,6 +46,12 @@ Mat PoseEstimation::render(Mat& img){
 	//std::cout << test << std::endl;
 	circle(res, Point(test.at<double>(0,0),test.at<double>(1,0)), 5, Scalar(255,0,255),-5);
 	
+	// Affichage de la note
+		std::cout << "note:"<<this->note << std::endl;
+	putText(res, "Note:" + std::to_string(note),  Point(10,65), fontFace, fontScale,
+	    Scalar(255, 0, 0), thickness);
+		
+	
 	return res;
 }
 
@@ -182,5 +188,47 @@ Mat PoseEstimation::computeProjectionMatrix(){
 	
 	//std::cout << "M" << M << std::endl;
 	
+	// Calcul de la note
+	computeNote(M);
+	
 	return M;
+}
+
+void PoseEstimation::computeNote(const Mat& M){
+	note = 1.0;
+	const Line* lineSansErreur = NULL;
+	// On regarde si toutes les lignes ont ete detectee
+	for (unsigned i = 0; i<lines.size(); i++){
+		Line line = lines[i];
+		
+		// Si non on degrade la note
+		if(line.getAxe() == NULL){
+			note -= 1.0/(float)lines.size();
+		}else if (lineSansErreur == NULL){ // On sauvegarde une ligne sans erreur
+			lineSansErreur = &lines[i];
+		}
+	}
+	
+	if(lineSansErreur != NULL){
+		// On note un point reel estime par une ligne sans erreur
+		Point pointOReel = lineSansErreur->getPts()[0]->getPos();
+	
+		// On estime la position de l'origine avec la matrice de projection
+		// Test
+		Mat pointO =  Mat::zeros(4, 1, CV_64F);
+		pointO.at<double>(3,0) = 1;
+		Mat matPointOProjete = M * pointO;
+		Point pointOProjete(matPointOProjete.at<double>(0,0),matPointOProjete.at<double>(1,0));
+	
+		// On calcul la distance
+		double distance = norm(pointOReel-pointOProjete);
+	
+		// Plus la distance est grande plus on degrade la note
+		if(distance > 1.0){
+			note /= distance/10;
+		}else{
+			note -= distance/100;
+		}
+		note *= 100;
+	}
 }
