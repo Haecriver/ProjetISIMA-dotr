@@ -25,9 +25,9 @@ Mat PoseEstimation::render(Mat& img){
 
 	//std::cout << Rt << std::endl;
 	
-	rotX=atan2(Rt.at<double>(3,2),Rt.at<double>(3,3)) * 180.0/M_PI;
-	rotY=atan2(Rt.at<double>(3,1),sqrt(Rt.at<double>(3,2)*Rt.at<double>(3,2)+Rt.at<double>(3,3)*Rt.at<double>(3,3))) * 180.0/M_PI;
-	rotZ=atan2(Rt.at<double>(2,1),Rt.at<double>(1,1)) * 180.0/M_PI;
+	rotX=atan2(Rt.at<double>(2,1),Rt.at<double>(2,2)) * 180.0/M_PI;
+	rotY=atan2(Rt.at<double>(2,0),sqrt(Rt.at<double>(2,1)*Rt.at<double>(2,1)+Rt.at<double>(2,2)*Rt.at<double>(2,2))) * 180.0/M_PI;
+	rotZ=atan2(Rt.at<double>(1,0),Rt.at<double>(0,0)) * 180.0/M_PI;
 	
 	//std::cout << "rotX:" << rotX << " rotY:" << rotY << " rotZ:" << rotZ  << std::endl;
 	
