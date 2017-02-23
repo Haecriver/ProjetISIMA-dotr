@@ -50,7 +50,7 @@ int main(int argc, const char* argv[] )
 	
 	Bthreshold* filtreBthreshold = new Bthreshold(200);
 	Etiquetage* filtreEtiquetage = new Etiquetage();
-	DetectLine* filtreDetectLine = new DetectLine(axes, filtreEtiquetage->getComps(),3,false);
+	DetectLine* filtreDetectLine = new DetectLine(axes, filtreEtiquetage->getComps(),3,true);
 	PoseEstimation* filtrePoseEstimation = new PoseEstimation(K,axes,filtreDetectLine->getLines());
 	
 	// Parametrage de la sortie filtree

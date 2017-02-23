@@ -85,7 +85,7 @@ Mat PoseEstimation::render(Mat& img){
 		5, Scalar(0,0,255),-5);*/
 	
 	// Affichage de la note
-		std::cout << "note:"<<this->note << std::endl;
+		//std::cout << "note:"<<this->note << std::endl;
 	putText(res, "Note:" + std::to_string(note),  Point(10,65), fontFace, fontScale,
 	    Scalar(255, 0, 0), thickness);
 		
