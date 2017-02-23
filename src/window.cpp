@@ -93,10 +93,6 @@ void Window::renderAll(){
 				outputVideo << render;
 			}
 			
-			// On libere la memoires
-			render.release();
-			img.release();
-			
 			// On calcul le temps de l'application du filtre
 			end = std::chrono::system_clock::now();
 			std::chrono::duration<double> elapsed_seconds = end-start;
@@ -119,17 +115,35 @@ void Window::renderAll(){
 		
 		// On attend pend msToWait ms l'appuie sur la touche ESC
 		int key = waitKey(msToWait);
-		if ( key == 27 || key == 'q'){
-			std::cout << "ESC key pressed by user" << std::endl;
-			cont = false;
-		}else{
+		switch(key){
+			case 27:
+			case 'q':
+				std::cout << "ESC key pressed by user" << std::endl;
+				cont = false;
+			break;
+			
+			case ' ':
+				std::cout << "Save current image (" << cpt << ")" << std::endl;
+				imwrite("./results/image_"+ std::to_string(cpt) +".png",render);
+			break;
+			
+			default:
+			break;
+		
+		}
+		
+		// On libere la memoires
+		render.release();
+		img.release();
+
+		if(!imageMode && cont){
 			// increment
-			if(!imageMode){
-				cont = _imgs.read(img);
-			}else{
-				freeze = true;
-			}
-		}		
+			cont = _imgs.read(img);
+		}else{
+			freeze = true;
+		}
+		
+		
     }
     std::cout<<"== Images rendues en : " << effectiveTime
 		<< "ms soit environ :" << 1/ (effectiveTime/(cpt*1000)) << " FPS ==" <<std::endl;

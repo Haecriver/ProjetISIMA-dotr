@@ -8,14 +8,15 @@ lines(plines)
 }
 
 Mat PoseEstimation::render(Mat& img){
+	Mat res(img.clone()), M, invK, Rt;
+	double rotX,rotY,rotZ;
+	
 	Scalar color;
 	int fontFace = CV_FONT_HERSHEY_COMPLEX_SMALL;
 	double fontScale = 0.6;
 	int thickness = 1;
 	std::string str;
 	
-	double rotX,rotY,rotZ;
-	Mat res(img.clone()), M, invK, Rt;
 	computeCorrespondingPoints();
 	M = computeProjectionMatrix();
 	// Extract [R|t]
@@ -39,12 +40,49 @@ Mat PoseEstimation::render(Mat& img){
 	    Scalar(255, 0, 255), thickness);
 	
 	// Test
-	Mat point =  Mat::zeros(4, 1, CV_64F);
-	point.at<double>(3,0) = 1;
+	Mat point1 =  Mat::zeros(4, 1, CV_64F);
+	point1.at<double>(3,0) = 1;
+	
+	Mat point2 =  Mat::zeros(4, 1, CV_64F);
+	point2.at<double>(0,0) = 150;
+	point2.at<double>(3,0) = 1;
+	
+	Mat point3 =  Mat::zeros(4, 1, CV_64F);
+	point3.at<double>(1,0) = 150;
+	point3.at<double>(3,0) = 1;
+	
+	Mat point4 =  Mat::zeros(4, 1, CV_64F);
+	point4.at<double>(2,0) = 150;
+	point4.at<double>(3,0) = 1;
+	
+	
+	
 	//std::cout << "test" << point << std::endl;
-	Mat test = M * point;
+	Mat point1proj = M * point1;
+	Mat point2proj = M * point2;
+	Mat point3proj = M * point3;
+	Mat point4proj = M * point4;
+			
 	//std::cout << test << std::endl;
-	circle(res, Point(test.at<double>(0,0),test.at<double>(1,0)), 5, Scalar(255,0,255),-5);
+	circle(res, 
+		Point(point1proj.at<double>(0,0)/point1proj.at<double>(2,0),
+		point1proj.at<double>(1,0)/point1proj.at<double>(2,0)),
+		5, Scalar(255,0,255),-5);
+		
+	/*circle(res, 
+		Point(point2proj.at<double>(0,0)/point2proj.at<double>(2,0),
+		point2proj.at<double>(1,0)/point2proj.at<double>(2,0)), 
+		5, Scalar(255,0,0),-5);
+	
+	circle(res, 
+		Point(point3proj.at<double>(0,0)/point3proj.at<double>(2,0),
+		point3proj.at<double>(1,0)/point3proj.at<double>(2,0)), 
+		5, Scalar(0,255,0),-5);
+	
+	circle(res, 
+		Point(point4proj.at<double>(0,0)/point4proj.at<double>(2,0),
+		point4proj.at<double>(1,0)/point4proj.at<double>(2,0)), 
+		5, Scalar(0,0,255),-5);*/
 	
 	// Affichage de la note
 		std::cout << "note:"<<this->note << std::endl;
@@ -96,6 +134,18 @@ void PoseEstimation::computeCorrespondingPoints(){
 			for(std::pair<LinePoint, std::vector<double> > el_pair:listePairs){
 				correspondingPoints.push_back(el_pair);
 			}
+			
+			/*putText(img, "Point2", listePairs[0].first.getPos(), CV_FONT_HERSHEY_COMPLEX_SMALL, 1.0,
+			Scalar(255, 255, 255), 1);
+			
+			putText(img, "Point3", listePairs[1].first.getPos(), CV_FONT_HERSHEY_COMPLEX_SMALL, 1.0,
+			Scalar(255, 255, 255), 1);
+			
+			putText(img, "Point4", listePairs[2].first.getPos(), CV_FONT_HERSHEY_COMPLEX_SMALL, 1.0,
+			Scalar(255, 255, 255), 1);
+	    
+			imshow("test correspondace",img);
+			waitKey();*/
 		}
 	}
 }
@@ -153,7 +203,6 @@ Mat PoseEstimation::computeProjectionMatrix(){
 	//std::cout<<A<<std::endl;
 	//std::cout<<b<<std::endl;
 	
-	Mat temp;
 	
 	// Calcul sur les matrices
 	// calcul At
