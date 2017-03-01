@@ -40,6 +40,8 @@ int main(int argc, const char* argv[] )
 	}
 	
 	// Chargement du modele
+	// Dans le cas du modele en aluminium, il faut utiliser
+	// le modele "./rsc/model2.xml"
 	axes = Axe::getAxes("./rsc/model1.xml");
 	if(axes.empty()){
 		std::cerr << "Le modele n'a pas ete charge" << std::endl;
