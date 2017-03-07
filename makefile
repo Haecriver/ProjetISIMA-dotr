@@ -36,7 +36,7 @@ LIBS = $(shell pkg-config --libs opencv)
 DEPS =
 
 ### Nom des executables ###
-_EXEC = dotr stats line calibration imagelist_creator cross_ratio
+_EXEC = dotr stats line calibration imagelist_creator cross_ratio soutenance
 EXEC = $(patsubst %,$(EXEDIR)/%,$(_EXEC))
 
 ### Fichiers communs a tous les executables ###
@@ -57,8 +57,11 @@ OBJ_STA = $(patsubst %,$(OBJDIR)/%.o,$(_OBJ_STA))
 _OBJ_LINE = main_line
 OBJ_LINE = $(patsubst %,$(OBJDIR)/%.o,$(_OBJ_LINE))
 
+_OBJ_SOUT = main_expose
+OBJ_SOUT = $(patsubst %,$(OBJDIR)/%.o,$(_OBJ_SOUT))
+
 ### Listes des fichiers objets ###
-OBJ = $(OBJ_COM) $(OBJ_VID) $(OBJ_STA) $(OBJ_LINE)
+OBJ = $(OBJ_COM) $(OBJ_VID) $(OBJ_STA) $(OBJ_LINE) $(OBJ_SOUT) 
 
 ## LISTE DES REGLES ##
 
@@ -74,6 +77,9 @@ build/stats:$(OBJ_STA) $(OBJ_COM)
 	$(CC) $^ $(LDFLAGS) $(LIBS) -o $@
 	
 build/line:$(OBJ_LINE) $(OBJ_COM)
+	$(CC) $^ $(LDFLAGS) $(LIBS) -o $@
+
+build/soutenance:$(OBJ_SOUT) $(OBJ_COM)
 	$(CC) $^ $(LDFLAGS) $(LIBS) -o $@
 
 $(OBJDIR)/%.o:$(SRCDIR)/%.cpp $(DEPS)

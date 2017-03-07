@@ -28,6 +28,7 @@ class Window{
 		//std::vector<Mat> imgs;		// Liste des images chargees
 		VideoCapture _imgs;
 		std::vector<Display> displays;
+		std::vector<Mat> displayRenders;
 		
 		VideoWriter outputVideo;
 		
@@ -42,6 +43,10 @@ class Window{
 		unsigned getNbValidPicture(unsigned nbCompToFind, Etiquetage* filtre_etiquetage_courant);
 		
 		void addDisplay(Display display);
+		
+		const std::vector<Mat>& getDisplaysRenders(){
+			return displayRenders;
+		}
 };
 
 /*!

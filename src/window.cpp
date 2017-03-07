@@ -62,7 +62,6 @@ void Window::enregistrementImgs(std::string nameFile){
 }
 
 void Window::renderAll(){
-	std::vector<Mat> displayRenders;
 	Mat render, img;
 	unsigned cpt = 0;
 	double effectiveTime = 0.0;
@@ -78,15 +77,16 @@ void Window::renderAll(){
 	// Pour chaque images chargees
    	while(cont){	      
 	   	if(!freeze){
+	   	
+	   		if(!displayRenders.empty()){ displayRenders.clear(); }
+	   	
 			start = std::chrono::system_clock::now();
 			for(Display display: displays){
 				displayRenders.push_back(display.render(img));
 			}
 			
 			render = catImages(displayRenders);
-			
-			displayRenders.clear();
-			
+
 			imshow("Rendu",render);
 			
 			if(outputVideo.isOpened()){

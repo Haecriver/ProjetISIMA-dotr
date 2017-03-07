@@ -56,7 +56,7 @@ int main(int argc, const char* argv[] )
 	Display filtered;
 	
 	Etiquetage* filtreEtiquetage = new Etiquetage();
-	DetectLine* filtreDetectLine = new DetectLine(axes, filtreEtiquetage->getComps(),4);
+	DetectLine* filtreDetectLine = new DetectLine(axes, filtreEtiquetage->getComps(),3);
 	
 	// Parametrage de la sortie filtree
 	filtered.addFiltre(new Grayscale());
